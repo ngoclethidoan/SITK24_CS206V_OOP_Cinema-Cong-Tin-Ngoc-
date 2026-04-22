@@ -75,7 +75,7 @@ public class LoginFrame extends JFrame {
                 String pass = new String(txtPassword.getPassword()); // The way to get pass from JPasswordField
 
                 // Logic preliminary check (can call UserService after)
-                if (user.equals("Ngoc") && pass.equals("123")) {
+                if (user.equals("Ngoc") && pass.equals("111")) {
                     JOptionPane.showMessageDialog(null, "Login successfully!");
                     
                     // Get the last size and position of login frame
