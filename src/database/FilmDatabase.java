@@ -7,7 +7,7 @@ import java.util.List;
 public class FilmDatabase {
     private static List<Film> listFilm = new ArrayList<>();
 
-    // Khối static này sẽ tự động chạy để nạp dữ liệu khi chương trình bắt đầu
+    // This static block will automatically run to load data when the program starts.
     static {
         listFilm.add(new ActionFilm(null, "ACT01", "John Wick: Chapter 4", 169, 10.0, null, null, 
             "Chad Stahelski", "Keanu Reeves, Donnie Yen", 
@@ -34,7 +34,5 @@ public class FilmDatabase {
 
     public static List<Film> getAllFilms() {
         return listFilm;
-    }
-
-    
+    }  
 }

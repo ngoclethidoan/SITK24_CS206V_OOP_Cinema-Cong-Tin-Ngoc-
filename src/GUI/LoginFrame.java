@@ -1,106 +1,162 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package GUI;
 
-/**
- *
- * @author Administrator
- */
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-public class LoginFrame extends JFrame {
-    
-    private JTextField txtUsername;
-    private JPasswordField txtPassword;
-    private JButton btnLogin, btnExit, btnFogetPassword;
-    
-    public LoginFrame() {
-        // 1. Initialize the frame
+
+public class LoginFrame extends JDialog {
+
+    private boolean isProcessing = false;
+
+    public LoginFrame(MainFrame mainFrame) {
+
         setTitle("Login");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // on middle of the frame
-        setResizable(true); // allow to change the frame size
+        setSize(350, 260);
+        setLocationRelativeTo(mainFrame);
+        setModal(true);
+        setLayout(null); // 🔥 để làm animation shake dễ hơn
+        getContentPane().setBackground(new Color(50, 50, 50));
 
-        // 2. Use GridBagLayout to calibration input boxes
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // The distance of boxes
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // ===== TITLE =====
+        JLabel title = new JLabel("LOGIN");
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Segoe", Font.BOLD, 20));
+        title.setBounds(140, 10, 100, 30);
+        add(title);
 
-        // --- First row: Username ---
-        gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("User name:"), gbc);
+        // ===== USER =====
+        JLabel userLabel = new JLabel("User:");
+        userLabel.setForeground(Color.WHITE);
+        userLabel.setBounds(40, 60, 80, 25);
+        add(userLabel);
 
-        gbc.gridx = 1; gbc.gridy = 0;
-        txtUsername = new JTextField(15);
-        add(txtUsername, gbc);
+        JTextField userField = new JTextField();
+        userField.setBounds(120, 60, 160, 25);
+        add(userField);
 
-        // --- Second row: Password ---
-        gbc.gridx = 0; gbc.gridy = 1;
-        add(new JLabel("Password:"), gbc);
+        // 🔥 FIX: luôn reset field khi mở dialog
+        userField.setText("");
 
-        gbc.gridx = 1; gbc.gridy = 1;
-        txtPassword = new JPasswordField(15);
-        add(txtPassword, gbc);
+        // ===== PASS =====
+        JLabel passLabel = new JLabel("Pass:");
+        passLabel.setForeground(Color.WHITE);
+        passLabel.setBounds(40, 100, 80, 25);
+        add(passLabel);
 
-        // --- Third row: Panel contain buttons ---
-        JPanel pnlButtons = new JPanel();
-        btnLogin = new JButton("Login");
-        btnExit = new JButton("Exit");
-        
-        pnlButtons.add(btnLogin);
-        pnlButtons.add(btnExit);
+        JPasswordField passField = new JPasswordField();
+        passField.setBounds(120, 100, 160, 25);
+        add(passField);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.gridwidth = 2; // occupy 2 column
-        add(pnlButtons, gbc);
+        // 🔥 FIX: reset password
+        passField.setText("");
 
-        // 3. Handle event
-        handleEvents();
-    }
-    
-    private void handleEvents() {
-        // Press exit button
-        btnExit.addActionListener(e -> System.exit(0));
+        // ===== SHOW PASSWORD CHECK =====
+        JCheckBox showPass = new JCheckBox("Show");
+        showPass.setBounds(120, 125, 100, 20);
+        showPass.setForeground(Color.WHITE);
+        showPass.setOpaque(false);
+        add(showPass);
 
-        // Press login button
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String user = txtUsername.getText();
-                String pass = new String(txtPassword.getPassword()); // The way to get pass from JPasswordField
-
-                // Logic preliminary check (can call UserService after)
-                if (user.equals("Ngoc") && pass.equals("111")) {
-                    JOptionPane.showMessageDialog(null, "Login successfully!");
-                    
-                    // Get the last size and position of login frame
-                    Rectangle currentBounds = getBounds(); 
-                    
-                    dispose(); // Close login frame
-                    
-                    // Open main frame
-                    // Inittialize MainFrame with Dimension from LoginFrame
-                    MainFrame mainFrame = new MainFrame(currentBounds.getSize());
-                    
-                    // Position the MainFrame so that it matches the LoginFrame
-                    mainFrame.setLocation(currentBounds.getLocation());
-                    
-                    mainFrame.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Wrong user name or password!", "Error!", JOptionPane.ERROR_MESSAGE);
-                }
+        showPass.addActionListener(e -> {
+            if (showPass.isSelected()) {
+                passField.setEchoChar((char) 0);
+            } else {
+                passField.setEchoChar('*');
             }
         });
+
+        // ===== LOGIN BUTTON =====
+        JButton loginBtn = new JButton("Login");
+        styleButton(loginBtn);
+        loginBtn.setBounds(120, 160, 100, 30);
+        add(loginBtn);
+
+        // ======================
+        // 🎯 ENTER FLOW
+        // ======================
+
+        userField.addActionListener(e -> passField.requestFocus());
+
+        passField.addActionListener(e ->
+                doLogin(mainFrame, userField, passField)
+        );
+
+        loginBtn.addActionListener(e ->
+                doLogin(mainFrame, userField, passField)
+        );
+
+        // 🎯 AUTO FOCUS
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                userField.requestFocus();
+            }
+        });
+
+        setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new LoginFrame().setVisible(true);
+    // ======================
+    // 🔥 LOGIN LOGIC
+    // ======================
+    private void doLogin(MainFrame mainFrame,
+                         JTextField userField,
+                         JPasswordField passField) {
+
+        if (isProcessing) return; // 🔥 chặn double event
+
+        String user = userField.getText();
+        String pass = new String(passField.getPassword());
+
+        if (user.equals("Admin") && pass.equals("123")) {
+
+            isProcessing = true;
+
+            mainFrame.setLoggedIn(true);
+            mainFrame.refreshUI();
+
+            // 🔥 QUAN TRỌNG: dispose đúng thread, tránh reopen bug
+            SwingUtilities.invokeLater(() -> {
+                dispose();
+            });
+
+        } else {
+            shake();
+        }
+    }
+
+    // ======================
+    // 🎬 SHAKE ANIMATION
+    // ======================
+    private void shake() {
+
+        Point original = getLocation();
+
+        Timer timer = new Timer(20, null);
+        final int[] count = {0};
+
+        timer.addActionListener(e -> {
+
+            int xOffset = (count[0] % 2 == 0) ? 10 : -10;
+            setLocation(original.x + xOffset, original.y);
+
+            count[0]++;
+
+            if (count[0] > 10) {
+                timer.stop();
+                setLocation(original);
+            }
         });
+
+        timer.start();
+    }
+
+    // ======================
+    // 🎨 STYLE BUTTON
+    // ======================
+    private void styleButton(JButton btn) {
+        btn.setFocusPainted(false);
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(new Color(40, 40, 40));
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 }
