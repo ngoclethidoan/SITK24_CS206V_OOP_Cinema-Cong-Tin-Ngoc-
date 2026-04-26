@@ -37,7 +37,7 @@ public class LoginFrame extends JDialog {
         userField.setText("");
 
         // ===== PASS =====
-        JLabel passLabel = new JLabel("Pass:");
+        JLabel passLabel = new JLabel("Password:");
         passLabel.setForeground(Color.WHITE);
         passLabel.setBounds(40, 100, 80, 25);
         add(passLabel);
@@ -110,7 +110,7 @@ public class LoginFrame extends JDialog {
 
             isProcessing = true;
 
-            mainFrame.setLoggedIn(true);
+            mainFrame.setLoggedIn(true, user);
             mainFrame.refreshUI();
 
             // 🔥 QUAN TRỌNG: dispose đúng thread, tránh reopen bug

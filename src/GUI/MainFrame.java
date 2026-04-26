@@ -1,214 +1,179 @@
 package GUI;
 
+import database.FilmDatabase;
+import model.Film;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class MainFrame extends JFrame {
-
     private JPanel currentScreen;
     private boolean isLoggedIn = false;
-
-    // 🔥 chỉ cần flag này nếu muốn chống mở nhiều dialog cùng lúc
-    private boolean loginOpened = false;
-
-    public MainFrame() {
-
-        // configue main window
-        setTitle("Cinema App");
-        setSize(1000, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        // 🎨 main layout
-        setLayout(new BorderLayout());
-
+    private String currentUsername = "Guest";
+    
+    public void refreshUI() {
+        setTitle("CNTcinema - " + currentUsername);
+        getContentPane().removeAll();
+        
+        // Always add the TopBar
         add(createTopBar(), BorderLayout.NORTH);
-
-        // 🎬 the first screen(temporary)
-        setScreen(createHomeScreen());
-
-        setVisible(true);
-    }
-
-    // 🔥 Change current screen
-    public void setScreen(JPanel screen) {
-
-        if (currentScreen != null) {
-            remove(currentScreen);
-        }
-
-        currentScreen = screen;
+        
+        // Show the movie grid
+        currentScreen = createMovieArea();
         add(currentScreen, BorderLayout.CENTER);
-
+        
         revalidate();
         repaint();
     }
+    
+    public void setLoggedIn(boolean value, String username) {
+        this.isLoggedIn = value;
+        this.currentUsername = value ? username : "Guest";
+        refreshUI();
+    }
+    
+    public MainFrame() {
+//        setTitle("Cinema App - " + (isLoggedIn ? "Admin Mode" : "Guest"));
+        setSize(1000, 750);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-    // The first screen temporarily created in construstor
-    private JPanel createHomeScreen() {
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(19, 19, 19));
-
-        JLabel title = new JLabel("🎬 Cinema App", JLabel.CENTER);
-        title.setForeground(Color.WHITE);
-        title.setFont(new Font("Segoe", Font.BOLD, 24));
-
-        panel.add(title, BorderLayout.CENTER);
-
-        return panel;
+        // Initial UI Setup
+        refreshUI();
+        setVisible(true);
+        
+        // Debugging print to console - look at your output window!
+        System.out.println("DEBUG: Java is looking for images in: " + System.getProperty("user.dir"));
     }
 
-    private JPanel createTopBar() {
+    
 
+    private JPanel createTopBar() {
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(19, 19, 19));
-        topBar.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // ===== LOGO =====
-        JLabel logo = new JLabel();
-        ImageIcon icon = new ImageIcon("assets/logo.png");
+        // Logo
+        JLabel logo = new JLabel("CNT CINEMA BOOKING SYSTEM");
+        logo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logo.setForeground(Color.WHITE);
+        
+        topBar.add(logo, BorderLayout.WEST);
+        ImageIcon logoIcon = new ImageIcon("assets/logo.png");
+        Image scaledImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+logo.setIcon(new ImageIcon(scaledImage));
+logo.setIconTextGap(15);
 
-        if (icon.getIconWidth() > 0) {
-            Image img = icon.getImage()
-                    .getScaledInstance(120, 90, Image.SCALE_SMOOTH);
-            logo.setIcon(new ImageIcon(img));
+        // Right side buttons
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
+        right.setOpaque(false);
+        JButton settingsBtn = new JButton("⚙ Settings");
+styleButton(settingsBtn, new Color(40, 40, 40));
+settingsBtn.addActionListener(e -> {
+    JOptionPane.showMessageDialog(this, "Settings coming soon!");
+    // Later you can do: new SettingsFrame(this).setVisible(true);
+});
+right.add(settingsBtn);
+        if (!isLoggedIn) {
+            JButton loginBtn = new JButton("Login");
+            styleButton(loginBtn, new Color(40, 40, 40));
+            loginBtn.addActionListener(e -> new LoginFrame(this));
+            right.add(loginBtn);
         } else {
-            logo.setText("NO LOGO");
-            logo.setForeground(Color.WHITE);
+            JButton adminBtn = new JButton("👤 Admin Panel");
+            JButton logoutBtn = new JButton("Logout");
+            styleButton(adminBtn, new Color(70, 70, 70));
+            styleButton(logoutBtn, new Color(180, 40, 40));
+            
+            logoutBtn.addActionListener(e -> {
+                isLoggedIn = false;
+                refreshUI();
+            });
+            
+            right.add(adminBtn);
+            right.add(logoutBtn);
         }
 
-        logo.setOpaque(false);
-        logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        JPanel left = new JPanel();
-        left.setOpaque(false);
-        left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
-        left.add(Box.createHorizontalGlue());
-        left.add(logo);
-        left.add(Box.createHorizontalGlue());
-
-        // ===== SEARCH =====
-        JTextField searchBar = new JTextField("🔍 Searching...");
-        searchBar.setPreferredSize(new Dimension(400, 40));
-        searchBar.setForeground(Color.GRAY);
-        searchBar.setBackground(new Color(40, 40, 40));
-        searchBar.setCaretColor(Color.WHITE);
-        searchBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        searchBar.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent e) {
-                if (searchBar.getText().equals("🔍 Searching...")) {
-                    searchBar.setText("");
-                    searchBar.setForeground(Color.WHITE);
-                }
-            }
-
-            public void focusLost(java.awt.event.FocusEvent e) {
-                if (searchBar.getText().isEmpty()) {
-                    searchBar.setText("🔍 Searching...");
-                    searchBar.setForeground(Color.GRAY);
-                }
-            }
-        });
-
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setOpaque(false);
-        centerWrapper.add(searchBar);
-
-        topBar.add(left, BorderLayout.WEST);
-        topBar.add(centerWrapper, BorderLayout.CENTER);
-        topBar.add(createRightPanel(), BorderLayout.EAST);
-
+        topBar.add(right, BorderLayout.EAST);
         return topBar;
     }
 
-    private JPanel createRightPanel() {
+    private JPanel createMovieArea() {
+        JPanel container = new JPanel(new BorderLayout());
+        container.setBackground(new Color(19, 19, 19));
 
-        JPanel right = new JPanel();
-        right.setOpaque(false);
-        right.setLayout(new BoxLayout(right, BoxLayout.X_AXIS));
+        JPanel movieGrid = new JPanel(new GridLayout(0, 3, 25, 25));
+        movieGrid.setBackground(new Color(19, 19, 19));
+        movieGrid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-        right.add(Box.createHorizontalGlue());
+        java.util.List<Film> films = FilmDatabase.getUniqueFilms(); 
 
-        if (!isLoggedIn) {
-
-            JButton loginBtn = new JButton("Login");
-            JButton signUpBtn = new JButton("Sign In");
-            JButton settingBtn = new JButton("⚙ Settings");
-
-            styleButton(loginBtn);
-            styleButton(signUpBtn);
-            styleButton(settingBtn);
-
-            right.add(loginBtn);
-            right.add(Box.createHorizontalStrut(10));
-            right.add(signUpBtn);
-            right.add(Box.createHorizontalStrut(10));
-            right.add(settingBtn);
-
-            // 🔥 FIX: open login safely
-            loginBtn.addActionListener(e -> openLogin());
-
-        } else {
-
-            JButton cardBtn = new JButton("🎴 Card");
-            JButton settingBtn = new JButton("⚙ Settings");
-            JButton userBtn = new JButton("👤 User");
-
-            styleButton(cardBtn);
-            styleButton(settingBtn);
-            styleButton(userBtn);
-
-            right.add(cardBtn);
-            right.add(Box.createHorizontalStrut(10));
-            right.add(settingBtn);
-            right.add(Box.createHorizontalStrut(10));
-            right.add(userBtn);
+        for (Film film : films) {
+            movieGrid.add(createMovieCard(film));
         }
 
-        right.add(Box.createHorizontalGlue());
-
-        return right;
+        JScrollPane scrollPane = new JScrollPane(movieGrid);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(new Color(19, 19, 19));
+        container.add(scrollPane, BorderLayout.CENTER);
+        // 🔥 THE SMOOTH SCROLL FIX:
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Standard speed
+        scrollPane.getVerticalScrollBar().setBlockIncrement(50); // Speed when clicking the track
+        return container;
     }
 
-    //CHUẨN LOGIN OPEN FLOW
-    public void openLogin() {
+    private JPanel createMovieCard(Film film) {
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBackground(new Color(30, 30, 30));
+        card.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        if (loginOpened) return;
+        // Poster Logic with Debugging
+        JLabel picLabel = new JLabel();
+        picLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        File imgFile = new File(film.getImagePath());
+        if (imgFile.exists()) {
+            ImageIcon icon = new ImageIcon(film.getImagePath());
+            Image img = icon.getImage().getScaledInstance(220, 310, Image.SCALE_SMOOTH);
+            picLabel.setIcon(new ImageIcon(img));
+        } else {
+            picLabel.setText("<html><center>Missing Image:<br>" + film.getImagePath() + "</center></html>");
+            picLabel.setForeground(Color.GRAY);
+            picLabel.setPreferredSize(new Dimension(220, 310));
+        }
 
-        loginOpened = true;
-
-        new LoginFrame(this); // modal → block tại đây
-
-        loginOpened = false; // 🔥 chạy sau khi dialog đóng
+        JLabel nameLabel = new JLabel(film.getTitle());
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(Box.createRigidArea(new Dimension(0, 10))); // Add a little space at the top
+        card.add(picLabel);
+        card.add(Box.createRigidArea(new Dimension(0, 10))); // Space between poster and name
+        card.add(nameLabel);
+        card.add(Box.createRigidArea(new Dimension(0, 10))); // Space at the bottom
+        
+        card.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+           
+            new FilmFrame(film, MainFrame.this).setVisible(true);
+//            MainFrame.this.setVisible(false); // Hide main instead of closing it
+        }
+    });
+    return card;
     }
 
-    private void styleButton(JButton btn) {
-        btn.setFocusPainted(false);
+    
+
+    private void styleButton(JButton btn, Color bg) {
+        btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
-        btn.setBackground(new Color(40, 40, 40));
-        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
-
-    public void setLoggedIn(boolean value) {
-        this.isLoggedIn = value;
-    }
-
-    public void refreshUI() {
-
-        SwingUtilities.invokeLater(() -> {
-
-            getContentPane().removeAll();
-            setLayout(new BorderLayout());
-
-            add(createTopBar(), BorderLayout.NORTH);
-            add(currentScreen, BorderLayout.CENTER);
-
-            revalidate();
-            repaint();
-        });
     }
 
     public static void main(String[] args) {

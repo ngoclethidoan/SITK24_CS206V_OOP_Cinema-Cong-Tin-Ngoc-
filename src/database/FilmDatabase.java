@@ -1,38 +1,49 @@
 package database;
 
-import model.*;
-import java.util.ArrayList;
-import java.util.List;
+import model.Film;
+import java.io.*;
+import java.util.*;
 
 public class FilmDatabase {
-    private static List<Film> listFilm = new ArrayList<>();
+    // 1. THE KEEPER: The list that holds the data
+    private static List<Film> films = new ArrayList<>();
 
-    // This static block will automatically run to load data when the program starts.
-    static {
-        listFilm.add(new ActionFilm(null, "ACT01", "John Wick: Chapter 4", 169, 10.0, null, null, 
-            "Chad Stahelski", "Keanu Reeves, Donnie Yen", 
-            "John Wick tìm ra con đường để đánh bại High Table. Nhưng trước khi giành lại tự do, Wick phải đối mặt với một kẻ thù mới.", 
-       "posters/ACT01.jpg"));
+    //THE READER: replaces your old CSVReader class
+    public static void initDatabase() {
+        films.clear(); // Start fresh
+        try (BufferedReader br = new BufferedReader(new FileReader("Data/films.csv"))) {
+            
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+        continue; 
+    }
+                
+                String[] data = line.split(",",9);
+                
+                String id = data[0].trim();
+                String title = data[1].trim();
+                int duration = Integer.parseInt(data[2].trim());
+                double price = Double.parseDouble(data[3].trim());
+                String director = data[4].trim();
+                String cast = data[5].trim();
+                String summary = data[6].trim();
+                String imagePath = data[7].trim();
+                String statusString = data[8].trim(); 
+                Film.State filmStatus = Film.State.valueOf(statusString); 
+               
 
-        listFilm.add(new ComedyFilm(null, "COM01", "Despicable Me 4", 94, 8.0, null, null, 
-            "Chris Renaud", "Steve Carell, Kristen Wiig", 
-            "Gru và gia đình chào đón một thành viên mới, Gru Jr., người có ý định hành hạ cha mình.",
-        "posters/COM01.jpeg"));
-
-        listFilm.add(new ActionFilm(null, "ACT02", "Deadpool & Wolverine", 127, 12.0, null, null, 
-            "Shawn Levy", "Ryan Reynolds, Hugh Jackman", 
-            "Một nhiệm vụ vô vọng khiến Deadpool phải hợp tác với Wolverine để cứu lấy vũ trụ của mình.",
-        "posters/ACT02.jpg"));
-        listFilm.add(new ActionFilm(
-    null,"ACT03", "John Wick: Ballerina", 107,                                      // Thời lượng (phút)
-    120000.0,null, Film.State.NOW_SHOWING, "Len Wiseman",                            // Đạo diễn
-    "Ana de Armas, Keanu Reeves, Ian McShane",
-    "Lấy bối cảnh giữa phần 3 và 4 của John Wick, câu chuyện theo chân Eve Macarro, một sát thủ trẻ tuổi đang tìm cách trả thù những kẻ đã sát hại gia đình mình.", 
-    "posters/ACT03.jpg"                  
-));
+films.add(new Film(id, title, duration, price, 
+        director, cast, summary, imagePath, filmStatus));
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading films: " + e.getMessage());
+        }
     }
 
-    public static List<Film> getAllFilms() {
-        return listFilm;
-    }  
+    // 3. THE PROVIDER: How the GUI gets the films
+    public static List<Film> getUniqueFilms() {
+        if (films.isEmpty()) initDatabase(); // Auto-load if empty
+        return films;
+    }
 }

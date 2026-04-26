@@ -1,6 +1,5 @@
 package model;
 
-import java.time.LocalDateTime;
 public class Film {
 
     public enum State {
@@ -9,34 +8,30 @@ public class Film {
         ENDED
     }
 
-    private final Room room;
+
     private final String codeFilm;     // Example: F001
     private final String title;        // Name
     private final int duration;        // Minus
     protected final double price;  // Base price
-    private final LocalDateTime showtime; //Ex: 2026, 4, 19, 19, 04
-    private State state;
-    
-    //
     protected String director;
     protected String cast;
     protected String summary;
     protected String imagePath; //films must be save with rule
+    private State state;
 
-    public Film(Room room, String codeFilm, String title, int duration, 
-            double price, LocalDateTime showtime, State state,
-            String director, String cast, String summary, String imagePath) {
-        this.room = room;
+    public Film(String codeFilm, String title, int duration, 
+            double price, String director, String cast, String summary, String imagePath, State state) {
+      
         this.codeFilm = codeFilm;
         this.title = title;
         this.duration = duration;
         this.price = price;
-        this.showtime = showtime;
-        this.state = state;
+        
         this.director = director;
         this.cast = cast;
         this.summary = summary;
         this.imagePath = imagePath; 
+        this.state = state;
     }
 
     // ── Getters ──────────────────────────────────────────────────────

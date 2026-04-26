@@ -2,8 +2,8 @@ package model;
 
 
 
-public class ActionFilm extends Film {
-    public ActionFilm(String codeFilm, String title, int duration, 
+public class AnimationFilm extends Film {
+    public AnimationFilm(String codeFilm, String title, int duration, 
             double price, String director, String cast, 
             String summary, String imagePath, State state) {
 
