@@ -5,11 +5,12 @@ import model.Film;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-
+import model.User;
 public class MainFrame extends JFrame {
     private JPanel currentScreen;
     private boolean isLoggedIn = false;
     private String currentUsername = "Guest";
+    private User currentUser = null;
     
     public void refreshUI() {
         setTitle("CNTcinema - " + currentUsername);
@@ -26,11 +27,12 @@ public class MainFrame extends JFrame {
         repaint();
     }
     
-    public void setLoggedIn(boolean value, String username) {
-        this.isLoggedIn = value;
-        this.currentUsername = value ? username : "Guest";
-        refreshUI();
-    }
+    public void setLoggedIn(boolean value, User user) {
+    this.isLoggedIn = value;
+    this.currentUser = value ? user : null;
+    this.currentUsername = value ? user.getName() : "Guest";
+    refreshUI();
+}
     
     public MainFrame() {
 //        setTitle("Cinema App - " + (isLoggedIn ? "Admin Mode" : "Guest"));
@@ -81,13 +83,23 @@ right.add(settingsBtn);
             loginBtn.addActionListener(e -> new LoginFrame(this));
             right.add(loginBtn);
         } else {
-            JButton adminBtn = new JButton("👤 Admin Panel");
+            // Nút giỏ hàng — hiển thị số vé đã đặt
+            int cartCount = (currentUser != null) ? currentUser.getBookingHistory().size() : 0;
+            String cartLabel = cartCount > 0 ? "🛒 Giỏ hàng (" + cartCount + ")" : "🛒 Giỏ hàng";
+            JButton cartBtn = new JButton(cartLabel);
+            styleButton(cartBtn, new Color(39, 120, 80));
+            cartBtn.addActionListener(e -> new CartFrame(this));
+            right.add(cartBtn);
+
+            JButton adminBtn = new JButton("👤 " + currentUsername);
             JButton logoutBtn = new JButton("Logout");
             styleButton(adminBtn, new Color(70, 70, 70));
             styleButton(logoutBtn, new Color(180, 40, 40));
             
             logoutBtn.addActionListener(e -> {
                 isLoggedIn = false;
+                currentUser = null;
+                currentUsername = "Guest";
                 refreshUI();
             });
             
@@ -179,4 +191,12 @@ right.add(settingsBtn);
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
     }
+
+    public boolean isLoggedIn() {
+    return isLoggedIn;
+}
+
+public User getCurrentUser() {
+    return currentUser;
+}
 }
