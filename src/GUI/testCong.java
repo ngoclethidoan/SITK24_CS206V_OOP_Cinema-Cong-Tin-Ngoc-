@@ -9,5 +9,5 @@ package GUI;
  * @author wayne
  */
 public class testCong {
-    // nan na na na nan an na cong dep trai
+    // vua cut may frame ra ngoai
 }
