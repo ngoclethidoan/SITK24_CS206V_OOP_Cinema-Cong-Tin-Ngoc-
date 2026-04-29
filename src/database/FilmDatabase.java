@@ -19,7 +19,7 @@ public class FilmDatabase {
         continue; 
     }
                 
-                String[] data = line.split(",",9);
+                String[] data = line.split("//",9);
                 
                 String id = data[0].trim();
                 String title = data[1].trim();
