@@ -16,10 +16,9 @@ public class BookTicket {
         this.film = film;
         this.items = new ArrayList<>();
     }
-    
-    // ── Getters ──────────────────────────────────────────────────────
-    public Room getRoom() {return this.room;}
-    public Seat getSeat() {return this.seat;}
-    public Film getFilm() {return this.film;}
-    public List<Item> getItems() {return this.items;}
+
+    public Room getRoom() { return room; }
+    public Seat getSeat() { return seat; }
+    public Film getFilm() { return film; }
+    public List<Item> getItems() { return items; }
 }

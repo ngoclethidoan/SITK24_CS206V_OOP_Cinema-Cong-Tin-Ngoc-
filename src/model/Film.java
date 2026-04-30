@@ -8,55 +8,57 @@ public class Film {
         ENDED
     }
 
+    private final String codeFilm;
+    private final String title;
+    private final int duration;
+    private final double price;
 
-    private final String codeFilm;     // Example: F001
-    private final String title;        // Name
-    private final int duration;        // Minus
-    protected final double price;  // Base price
-    protected String director;
-    protected String cast;
-    protected String summary;
-    protected String imagePath; //films must be save with rule
+    private String director;
+    private String cast;
+    private String summary;
+    private String imagePath;
+
+    // 🔥 IMPORTANT: mapping film → room
+    private String roomId;
+
     private State state;
 
-    public Film(String codeFilm, String title, int duration, 
-            double price, String director, String cast, String summary, String imagePath, State state) {
-      
+    public Film(String codeFilm, String title, int duration,
+                double price, String director, String cast,
+                String summary, String imagePath,
+                String roomId, State state) {
+
         this.codeFilm = codeFilm;
         this.title = title;
         this.duration = duration;
         this.price = price;
-        
+
         this.director = director;
         this.cast = cast;
         this.summary = summary;
-        this.imagePath = imagePath; 
+        this.imagePath = imagePath;
+
+        this.roomId = roomId;
         this.state = state;
     }
 
-    // ── Getters ──────────────────────────────────────────────────────
+    // ── GETTERS ─────────────────────
     public String getCodeFilm() { return codeFilm; }
     public String getTitle() { return title; }
     public int getDuration() { return duration; }
     public double getPrice() { return price; }
+
+    public String getRoomId() { return roomId; }
+
     public State getState() { return state; }
-    //
+
     public String getDirector() { return director; }
     public String getCast() { return cast; }
     public String getSummary() { return summary; }
     public String getImagePath() { return imagePath; }
-    
-    // ── Setters ──────────────────────────────────────────────────────
-    public void setState(State newState) {this.state = newState;}
 
-    // ── State transitions ───────────────────────────────────────────
-    public boolean isComingSoon() { return state == State.COMING_SOON; }
-    public boolean isNowShowing() { return state == State.NOW_SHOWING; }
-    public boolean isEnded() { return state == State.ENDED; }
-
-    @Override
-    public String toString() {
-        return String.format("[%s | %s | %d mins | %.0f VND]", 
-                codeFilm, title, duration, getPrice());
+    // ── SETTERS ─────────────────────
+    public void setState(State state) {
+        this.state = state;
     }
 }

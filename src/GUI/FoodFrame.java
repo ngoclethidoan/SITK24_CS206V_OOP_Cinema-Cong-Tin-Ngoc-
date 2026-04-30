@@ -164,7 +164,7 @@ public class FoodFrame extends JDialog {
         styleBtn(btnBack, new Color(70, 70, 70));
         btnBack.addActionListener(e -> {
             dispose();
-            new SeatFrame(film, mainFrame);
+            new SeatPanel(film, mainFrame);
         });
 
         JButton btnNext = new JButton("Proceed to Payment →");
