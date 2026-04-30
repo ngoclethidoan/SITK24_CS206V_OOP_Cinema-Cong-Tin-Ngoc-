@@ -8,9 +8,11 @@ public class RoomDatabase {
 
     private static Map<String, Room> rooms = new HashMap<>();
 
-    static {
-        createRoom("R1", 6, 8);
-        createRoom("R2", 6, 8);
+    public static void init() {
+        rooms.clear();
+        for (int i = 1; i <= 14; i++) {
+            createRoom("R" + i, 6, 8);
+        }
     }
 
     private static void createRoom(String id, int r, int c) {

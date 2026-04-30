@@ -7,7 +7,7 @@ import java.util.*;
 public class FilmDatabase {
 
     private static List<Film> films = new ArrayList<>();
-
+    
     // ───────────────── INIT DATABASE ─────────────────
     public static void initDatabase() {
 
