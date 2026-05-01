@@ -76,7 +76,7 @@ public class PayPanel extends JPanel {
 
         totalLabel = new JLabel();
         totalLabel.setForeground(Color.YELLOW);
-        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        totalLabel.setFont(new Font("Dialog", Font.BOLD, 16));
 
         updateTotal();
 
