@@ -20,8 +20,6 @@ public class SeatPanel extends JPanel {
     private Seat[][] seats;
     private Room room;
 
-    private boolean editMode;
-
     // Bottom bar components
     private JLabel lblSelected;
     private JLabel lblTotal;
@@ -33,7 +31,6 @@ public class SeatPanel extends JPanel {
     private static final Color CLR_SELECTED  = new Color(41, 128, 185);  // xanh dương
     private static final Color CLR_BOOKED    = new Color(55, 55, 55);    // xám tối
     private static final Color CLR_BOOKED_TXT = new Color(100, 100, 100);
-    private static final Color CLR_ADMIN_BOOKED = new Color(139, 35, 35); // đỏ tối (admin)
     private static final Color BOTTOM_BG    = new Color(28, 28, 35);
 
     // ── Constructor ──────────────────────────────────────────────────
@@ -43,9 +40,6 @@ public class SeatPanel extends JPanel {
 
         this.room  = RoomDatabase.getRoom(film.getRoomId());
         this.seats = room.getSeats();
-
-        this.editMode = mainFrame.getCurrentUser() != null
-                && mainFrame.getCurrentUser().isAdmin();
 
         setLayout(new BorderLayout());
         setBackground(BG);
@@ -72,15 +66,9 @@ public class SeatPanel extends JPanel {
 
         // Chú thích màu
         p.add(Box.createHorizontalStrut(24));
-        p.add(legend(CLR_AVAILABLE,   "Trống"));
+        p.add(legend(CLR_AVAILABLE, "Ghế trống"));
         p.add(Box.createHorizontalStrut(10));
-        p.add(legend(CLR_SELECTED,    "Đang chọn"));
-        p.add(Box.createHorizontalStrut(10));
-        p.add(legend(CLR_BOOKED,      "Đã đặt"));
-        if (editMode) {
-            p.add(Box.createHorizontalStrut(10));
-            p.add(legend(CLR_ADMIN_BOOKED, "[Admin] Đã đặt"));
-        }
+        p.add(legend(CLR_BOOKED,    "Ghế đã đặt"));
         return p;
     }
 
@@ -158,16 +146,7 @@ public class SeatPanel extends JPanel {
     private void onSeatClick(int r, int c) {
         Seat seat = seats[r][c];
 
-        if (editMode) {
-            // Admin: toggle booked <-> available
-            seat.setState(seat.getState() == Seat.State.booked
-                    ? Seat.State.available
-                    : Seat.State.booked);
-            applyColor(buttons[r][c], seat);
-            return;
-        }
-
-        // User mode: bỏ qua ghế đã đặt
+        // Bỏ qua ghế đã đặt
         if (!seat.isAvailable()) return;
 
         // Toggle chọn/bỏ chọn
@@ -184,15 +163,9 @@ public class SeatPanel extends JPanel {
     // ── ÁP DỤNG MÀU NÚT ─────────────────────────────────────────────
     private void applyColor(JButton btn, Seat seat) {
         if (!seat.isAvailable()) {
-            if (editMode) {
-                btn.setBackground(CLR_ADMIN_BOOKED);
-                btn.setForeground(Color.WHITE);
-                btn.setEnabled(true);
-            } else {
-                btn.setBackground(CLR_BOOKED);
-                btn.setForeground(CLR_BOOKED_TXT);
-                btn.setEnabled(false);
-            }
+            btn.setBackground(CLR_BOOKED);
+            btn.setForeground(CLR_BOOKED_TXT);
+            btn.setEnabled(false);
         } else if (selectedSeats.contains(seat)) {
             btn.setBackground(CLR_SELECTED);
             btn.setForeground(Color.WHITE);
