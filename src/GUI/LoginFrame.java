@@ -20,7 +20,7 @@ public class LoginFrame extends JDialog {
         // ── TITLE ─────────────────────────────────────────────────────
         JLabel title = new JLabel("LOGIN");
         title.setForeground(Color.WHITE);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setFont(new Font("Dialog", Font.BOLD, 20));
         title.setBounds(148, 12, 100, 30);
         add(title);
 
@@ -51,7 +51,7 @@ public class LoginFrame extends JDialog {
         showPass.setBounds(125, 136, 150, 20);
         showPass.setForeground(new Color(180, 180, 180));
         showPass.setOpaque(false);
-        showPass.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        showPass.setFont(new Font("Dialog", Font.PLAIN, 12));
         add(showPass);
         showPass.addActionListener(e ->
                 passField.setEchoChar(showPass.isSelected() ? (char) 0 : '*'));
@@ -59,7 +59,7 @@ public class LoginFrame extends JDialog {
         // ── STATUS LABEL ──────────────────────────────────────────────
         JLabel lblStatus = new JLabel("");
         lblStatus.setBounds(25, 163, 310, 18);
-        lblStatus.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblStatus.setFont(new Font("Dialog", Font.PLAIN, 12));
         lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
         add(lblStatus);
 
@@ -144,7 +144,7 @@ public class LoginFrame extends JDialog {
     private void styleButton(JButton btn, Color bg) {
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setFont(new Font("Dialog", Font.BOLD, 13));
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));

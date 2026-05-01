@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class User {
     private String name;
-    private final String userId;
+    private String userId;        // mutable – có thể đổi qua Settings
     private String password;
     private boolean isVIP;
     private boolean isAdmin;
@@ -18,19 +18,22 @@ public class User {
         this.userId = userId;
         this.password = password;
         this.isVIP = false;
-        this.bookingHistory = bookingHistory;
         this.isAdmin = false;
+        this.bookingHistory = bookingHistory != null ? bookingHistory : new ArrayList<>();
     }
 
-    public String getName() { return this.name; }
-    public String getUserId() { return this.userId; }
-    public String getPassword() { return this.password; }
-    public boolean isAdmin() { return isAdmin;}
+    public String getName()     { return name; }
+    public String getUserId()   { return userId; }
+    public String getPassword() { return password; }
+    public boolean isAdmin()    { return isAdmin; }
+    public boolean isVIP()      { return isVIP; }
 
-    public List<CartItem> getCart() { return cart; }
-    public List<BookTicket> getBookingHistory() { return bookingHistory; }
+    public List<CartItem>    getCart()           { return cart; }
+    public List<BookTicket>  getBookingHistory() { return bookingHistory; }
 
-    public void setName(String newName) { this.name = newName; }
+    public void setName(String newName)         { this.name     = newName; }
+    public void setUserId(String newId)         { this.userId   = newId; }
     public void setPassword(String newPassword) { this.password = newPassword; }
-    public void setVIP(boolean isVIP) { this.isVIP = isVIP; }
-}   
+    public void setVIP(boolean isVIP)           { this.isVIP    = isVIP; }
+    public void setAdmin(boolean isAdmin)       { this.isAdmin  = isAdmin; }
+}

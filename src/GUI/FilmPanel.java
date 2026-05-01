@@ -49,7 +49,7 @@ public class FilmPanel extends JPanel {
         // 2. Title
         JLabel lblName = new JLabel(film.getTitle());
         lblName.setForeground(Color.WHITE);
-        lblName.setFont(new Font("Arial", Font.BOLD, 32));
+        lblName.setFont(new Font("Dialog", Font.BOLD, 32));
         lblName.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(lblName);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -64,7 +64,7 @@ public class FilmPanel extends JPanel {
                         "<b>Duration:</b> " + film.getDuration() + " mins</div></html>"
         );
 
-        lblInfo.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblInfo.setFont(new Font("Dialog", Font.PLAIN, 16));
         lblInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(lblInfo);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
@@ -76,7 +76,7 @@ public class FilmPanel extends JPanel {
         txtSummary.setEditable(false);
         txtSummary.setOpaque(false);
         txtSummary.setForeground(new Color(200, 200, 200));
-        txtSummary.setFont(new Font("Arial", Font.ITALIC, 15));
+        txtSummary.setFont(new Font("Dialog", Font.ITALIC, 15));
         txtSummary.setMaximumSize(new Dimension(600, 200));
         centerPanel.add(txtSummary);
 
@@ -124,7 +124,7 @@ public class FilmPanel extends JPanel {
 
     // Helper method to style buttons
     private void styleButton(JButton btn, Color bg) {
-        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        btn.setFont(new Font("Dialog", Font.BOLD, 18));
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
