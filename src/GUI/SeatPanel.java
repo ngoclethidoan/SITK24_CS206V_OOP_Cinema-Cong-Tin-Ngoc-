@@ -1,4 +1,4 @@
-package GUI;
+    package GUI;
 
 import model.*;
 import database.RoomDatabase;
@@ -153,8 +153,8 @@ public class SeatPanel extends JPanel {
         info.add(lblSelected);
         info.add(lblPrice);
 
-        JButton add = new JButton("Add to Cart");
-
+        JButton add = new JButton("Next");
+        
         add.addActionListener(e -> {
 
             if (selectedSeat == null) return;
