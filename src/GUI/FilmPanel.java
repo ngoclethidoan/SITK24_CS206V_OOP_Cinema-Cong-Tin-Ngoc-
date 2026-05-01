@@ -106,7 +106,12 @@ public class FilmPanel extends JPanel {
 
         // BOOK NOW LOGIC
         btnBookNow.addActionListener(e -> {
-            System.out.println("Opening booking for: " + film.getTitle());
+            if (!parent.isLoggedIn()) {
+                JOptionPane.showMessageDialog(this, "You have not Login!");
+            } else {
+                System.out.println("Opening booking for: " + film.getTitle());
+            }
+            
         });
 
         actionButtonPanel.add(btnAddToCart);
