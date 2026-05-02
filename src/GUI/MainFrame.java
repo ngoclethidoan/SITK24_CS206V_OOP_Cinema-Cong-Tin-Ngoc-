@@ -5,6 +5,7 @@ import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.List;
 
 import static GUI.LanguageManager.t;
 
@@ -17,6 +18,9 @@ public class MainFrame extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel     mainPanel  = new JPanel(cardLayout);
     private SearchBar searchBar;
+    private boolean isUserPanelOpen = false;
+    private static final String HOME = "HOME";
+    private static final String USER = "USER";
 
     public void refreshUI() {
         // Luôn đồng bộ currentUsername với currentUser.getName() mới nhất
@@ -26,6 +30,9 @@ public class MainFrame extends JFrame {
         add(createTopBar(), BorderLayout.NORTH);
         mainPanel.removeAll();
         mainPanel.add(createMovieArea(), "HOME");
+        if (currentUser != null) {
+            mainPanel.add(new UserPanel(this, currentUser), USER);
+        }
         add(mainPanel, BorderLayout.CENTER);
         cardLayout.show(mainPanel, "HOME");
         revalidate();
@@ -40,6 +47,7 @@ public class MainFrame extends JFrame {
     }
 
     public MainFrame() {
+        FontConfig.init();  
         setSize(1100, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -92,16 +100,10 @@ public class MainFrame extends JFrame {
 
             JButton adminBtn = new JButton("👤 " + currentUsername);
             styleButton(adminBtn, new Color(70, 70, 70));
-
-            JButton logoutBtn = new JButton(t(LanguageManager.BTN_LOGOUT));
-            styleButton(logoutBtn, new Color(180, 40, 40));
-            logoutBtn.addActionListener(e -> {
-                isLoggedIn = false; currentUser = null; currentUsername = "Guest"; refreshUI();
-            });
+            adminBtn.addActionListener(e -> showUserPanel());
 
             right.add(cartBtn);
             right.add(adminBtn);
-            right.add(logoutBtn);
         }
 
         JButton settingsBtn = new JButton(t(LanguageManager.BTN_SETTINGS));
@@ -124,6 +126,8 @@ public class MainFrame extends JFrame {
         JScrollPane sp = new JScrollPane(movieGrid);
         sp.setBorder(null);
         sp.getViewport().setBackground(new Color(19, 19, 19));
+        sp.getVerticalScrollBar().setUnitIncrement(20);
+        sp.getHorizontalScrollBar().setUnitIncrement(20);
         container.add(sp, BorderLayout.CENTER);
         return container;
     }
@@ -160,6 +164,19 @@ public class MainFrame extends JFrame {
     public void showHome() {
         if (searchBar != null) searchBar.hideDropdown();
         cardLayout.show(mainPanel, "HOME");
+        isUserPanelOpen = false;
+    }
+    
+    public void showUserPanel() {
+        if (currentUser == null) return;
+
+        if (isUserPanelOpen) {
+            cardLayout.show(mainPanel, HOME);
+            isUserPanelOpen = false;
+        } else {
+            cardLayout.show(mainPanel, USER);
+            isUserPanelOpen = true;
+        }
     }
 
     public void showCart() {
@@ -167,13 +184,13 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "CART");
     }
 
-    public void showSeatPanel(Film film) {
-        mainPanel.add(new SeatPanel(film, this), "SEAT");
+    public void showSeatPanel(Film film, boolean bookMode) {
+        mainPanel.add(new SeatPanel(film, this, bookMode), "SEAT");
         cardLayout.show(mainPanel, "SEAT");
     }
 
-    public void showPay() {
-        mainPanel.add(new PayPanel(this), "PAY");
+    public void showPay(List<CartItem> items, boolean fromCart) {
+        mainPanel.add(new PayPanel(this, items, fromCart), "PAY");
         cardLayout.show(mainPanel, "PAY");
     }
 

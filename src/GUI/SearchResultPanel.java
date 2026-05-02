@@ -34,7 +34,7 @@ public class SearchResultPanel extends JPanel {
 
         JLabel title = new JLabel("🔍  \"" + query + "\"  —  " + results.size() + " result(s)");
         title.setForeground(new Color(180, 180, 180));
-        title.setFont(new Font("Dialog", Font.PLAIN, 14));
+        title.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         topBar.add(backBtn);
         topBar.add(title);
@@ -44,7 +44,7 @@ public class SearchResultPanel extends JPanel {
         if (results.isEmpty()) {
             JLabel none = new JLabel(LanguageManager.t(LanguageManager.SEARCH_NO_RESULTS), SwingConstants.CENTER);
             none.setForeground(new Color(120, 120, 120));
-            none.setFont(new Font("Dialog", Font.ITALIC, 18));
+            none.setFont(new Font("SansSerif", Font.ITALIC, 18));
             add(none, BorderLayout.CENTER);
         } else {
             JPanel grid = new JPanel(new GridLayout(0, 3, 25, 25));
@@ -58,6 +58,8 @@ public class SearchResultPanel extends JPanel {
             JScrollPane sp = new JScrollPane(grid);
             sp.setBorder(null);
             sp.getViewport().setBackground(new Color(19, 19, 19));
+            sp.getVerticalScrollBar().setUnitIncrement(20);
+            sp.getHorizontalScrollBar().setUnitIncrement(20);
             add(sp, BorderLayout.CENTER);
         }
     }
@@ -82,7 +84,7 @@ public class SearchResultPanel extends JPanel {
 
         JLabel name = new JLabel(film.getTitle());
         name.setForeground(Color.WHITE);
-        name.setFont(new Font("Dialog", Font.PLAIN, 13));
+        name.setFont(new Font("SansSerif", Font.PLAIN, 13));
         name.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         card.add(pic);

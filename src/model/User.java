@@ -18,7 +18,7 @@ public class User {
         this.userId = userId;
         this.password = password;
         this.isVIP = false;
-        this.isAdmin = false;
+        this.isAdmin = true;
         this.bookingHistory = bookingHistory != null ? bookingHistory : new ArrayList<>();
     }
 
@@ -36,4 +36,8 @@ public class User {
     public void setPassword(String newPassword) { this.password = newPassword; }
     public void setVIP(boolean isVIP)           { this.isVIP    = isVIP; }
     public void setAdmin(boolean isAdmin)       { this.isAdmin  = isAdmin; }
+    
+    public void addBooking(BookTicket ticket) {
+        bookingHistory.add(ticket);
+    }
 }

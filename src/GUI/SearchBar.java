@@ -29,13 +29,13 @@ public class SearchBar extends JPanel {
     private static Font safeFont(String name, int style, int size) {
         Font f = new Font(name, style, size);
         if (f.getFamily().equalsIgnoreCase(name)) return f;
-        return new Font("Dialog", style, size);
+        return new Font("SansSerif", style, size);
     }
 
-    private static final Font FONT_UI    = safeFont("Segoe UI",       Font.PLAIN, 15);
-    private static final Font FONT_BOLD  = safeFont("Segoe UI",       Font.BOLD,  14);
-    private static final Font FONT_SUB   = safeFont("Segoe UI",       Font.PLAIN, 12);
-    private static final Font FONT_EMOJI = safeFont("Segoe UI Emoji", Font.PLAIN, 16);
+    private static final Font FONT_UI    = safeFont("SansSerif",       Font.PLAIN, 15);
+    private static final Font FONT_BOLD  = safeFont("SansSerif",       Font.BOLD,  14);
+    private static final Font FONT_SUB   = safeFont("SansSerif",       Font.PLAIN, 12);
+    private static final Font FONT_EMOJI = safeFont("SansSerif Emoji", Font.PLAIN, 16);
 
     // ── Components ───────────────────────────────────────────────────
     private final JTextField field;
@@ -74,8 +74,41 @@ public class SearchBar extends JPanel {
             }
         };
         pill.setOpaque(false);
+        
+        // ── Text field ────────────────────────────────────────────────
+        field = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
 
-        // ── 🔍 Search icon button (clickable) ─────────────────────────
+                if (getText().isEmpty() && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setColor(PLACEHOLDER_CLR);
+                    g2.setFont(getFont().deriveFont(Font.ITALIC));
+
+                    FontMetrics fm = g2.getFontMetrics();
+                    int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+
+                    g2.drawString(
+                            LanguageManager.t(LanguageManager.SEARCH_PLACEHOLDER),
+                            6,
+                            y
+                    );
+
+                    g2.dispose();
+                }
+            }
+        };
+
+        field.setOpaque(false);
+        field.setBackground(BG);
+        field.setForeground(TEXT_CLR);
+        field.setCaretColor(TEXT_CLR);
+        field.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6));
+        field.setFont(FONT_UI);
+
+
+       // ── 🔍 Search icon button (clickable) ─────────────────────────
         searchIconBtn = new JButton("🔍");
         searchIconBtn.setFont(FONT_EMOJI);
         searchIconBtn.setForeground(PLACEHOLDER_CLR);
@@ -84,36 +117,12 @@ public class SearchBar extends JPanel {
         searchIconBtn.setBorderPainted(false);
         searchIconBtn.setFocusPainted(false);
         searchIconBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        searchIconBtn.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 4));
+        searchIconBtn.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         searchIconBtn.addActionListener(e -> doSearch());
-        pill.add(searchIconBtn, BorderLayout.WEST);
-
-        // ── Text field ────────────────────────────────────────────────
-        field = new JTextField() {
-            @Override protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getText().isEmpty() && !isFocusOwner()) {
-                    Graphics2D g2 = (Graphics2D) g.create();
-                    g2.setColor(PLACEHOLDER_CLR);
-                    g2.setFont(getFont().deriveFont(Font.ITALIC));
-                    FontMetrics fm = g2.getFontMetrics();
-                    int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-                    g2.drawString(LanguageManager.t(LanguageManager.SEARCH_PLACEHOLDER), 4, y);
-                    g2.dispose();
-                }
-            }
-        };
-        field.setOpaque(false);
-        field.setBackground(BG);
-        field.setForeground(TEXT_CLR);
-        field.setCaretColor(TEXT_CLR);
-        field.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
-        field.setFont(FONT_UI);
-        pill.add(field, BorderLayout.CENTER);
 
         // ── ✕ Clear button ────────────────────────────────────────────
         clearBtn = new JButton("✕");
-        clearBtn.setFont(safeFont("Segoe UI", Font.PLAIN, 12));
+        clearBtn.setFont(safeFont("SansSerif", Font.PLAIN, 12));
         clearBtn.setForeground(PLACEHOLDER_CLR);
         clearBtn.setOpaque(false);
         clearBtn.setContentAreaFilled(false);
@@ -121,9 +130,26 @@ public class SearchBar extends JPanel {
         clearBtn.setFocusPainted(false);
         clearBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         clearBtn.setVisible(false);
-        clearBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
-        clearBtn.addActionListener(e -> { field.setText(""); hideDropdown(); field.requestFocus(); });
-        pill.add(clearBtn, BorderLayout.EAST);
+        clearBtn.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        clearBtn.addActionListener(e -> {
+            field.setText("");
+            hideDropdown();
+            field.requestFocus();
+        });
+
+        // ── RIGHT PANEL (FIX LAYOUT BUG) ─────────────────────────────
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        rightPanel.setOpaque(false);
+        rightPanel.add(clearBtn);
+        rightPanel.add(searchIconBtn);
+
+        // ── PILL CONTAINER ───────────────────────────────────────────
+        JPanel pill = new JPanel(new BorderLayout());
+        pill.setBackground(BG);
+        pill.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+
+        pill.add(field, BorderLayout.CENTER);
+        pill.add(rightPanel, BorderLayout.EAST);
 
         add(pill, BorderLayout.CENTER);
 
@@ -255,7 +281,7 @@ public class SearchBar extends JPanel {
         if (currentSuggestions.isEmpty()) {
             JLabel none = new JLabel("  " + LanguageManager.t(LanguageManager.SEARCH_NO_RESULTS));
             none.setForeground(PLACEHOLDER_CLR);
-            none.setFont(safeFont("Segoe UI", Font.ITALIC, 13));
+            none.setFont(safeFont("SansSerif", Font.ITALIC, 13));
             none.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
             dropPanel.add(none);
         } else {
@@ -296,7 +322,7 @@ public class SearchBar extends JPanel {
             thumb.setIcon(new ImageIcon(img));
         } else {
             thumb.setText("🎬");
-            thumb.setFont(safeFont("Segoe UI Emoji", Font.PLAIN, 22));
+            thumb.setFont(safeFont("SansSerif", Font.PLAIN, 22));
             thumb.setForeground(PLACEHOLDER_CLR);
         }
         row.add(thumb, BorderLayout.WEST);

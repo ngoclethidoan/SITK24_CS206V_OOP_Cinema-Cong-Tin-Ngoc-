@@ -1,6 +1,6 @@
 package database;
 
-import model.User;
+import model.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
@@ -43,15 +43,32 @@ public class UserDatabase {
     }
 
     /** Gọi sau khi thay đổi bất kỳ thuộc tính nào của user */
-    public static void save() {
+   public static void save() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(DATA_FILE))) {
+
             for (User u : users) {
-                // userId|name|password|isAdmin
-                pw.println(escape(u.getUserId()) + "|"
-                         + escape(u.getName())   + "|"
-                         + escape(u.getPassword())+ "|"
-                         + u.isAdmin());
+
+                StringBuilder history = new StringBuilder();
+
+                for (BookTicket t : u.getBookingHistory()) {
+
+                    history.append(
+                            t.getFilm().getTitle() + "," +
+                            t.getSeat().getCodeSeat() + "," +
+                            t.getRoom().getRoomId() + "," +
+                            t.getPrice()
+                    ).append(";");
+                }
+
+                pw.println(
+                        escape(u.getUserId()) + "|" +
+                        escape(u.getName()) + "|" +
+                        escape(u.getPassword()) + "|" +
+                        u.isAdmin() + "|" +
+                        history
+                );
             }
+
         } catch (IOException e) {
             System.err.println("UserDatabase: cannot save – " + e.getMessage());
         }

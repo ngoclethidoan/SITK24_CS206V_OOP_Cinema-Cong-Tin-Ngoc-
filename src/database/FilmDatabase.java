@@ -7,7 +7,7 @@ import java.util.*;
 public class FilmDatabase {
 
     private static List<Film> films = new ArrayList<>();
-    
+
     // ───────────────── INIT DATABASE ─────────────────
     public static void initDatabase() {
 
@@ -20,7 +20,7 @@ public class FilmDatabase {
             return;
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));) {
 
             String line;
 
@@ -28,31 +28,73 @@ public class FilmDatabase {
 
                 if (line.trim().isEmpty()) continue;
 
-                String[] data = line.split("//");
+                // safer split
+                String[] data = line.split("//", -1);
 
-                if (data.length < 10) {
+                // EXPECT 14 FIELDS
+                if (data.length < 14) {
                     System.out.println("Invalid row: " + line);
                     continue;
                 }
 
                 String id = data[0].trim();
-                String title = data[1].trim();
-                int duration = Integer.parseInt(data[2].trim());
-                double price = Double.parseDouble(data[3].trim());
 
-                String director = data[4].trim();
-                String cast = data[5].trim();
-                String summary = data[6].trim();
-                String imagePath = data[7].trim();
+                // ── TITLES ──
+                String titleEN = data[1].trim();
+                String titleVI = data[2].trim();
+                String titleJP = data[3].trim();
 
-                String roomId = data[8].trim();
-                Film.State state = Film.State.valueOf(data[9].trim());
+                int duration;
+                double price;
 
-                films.add(new Film(
-                        id, title, duration, price,
-                        director, cast, summary,
-                        imagePath, roomId, state
-                ));
+                try {
+                    duration = Integer.parseInt(data[4].trim());
+                    price = Double.parseDouble(data[5].trim());
+                } catch (Exception e) {
+                    System.out.println("Invalid number in row: " + line);
+                    continue;
+                }
+
+                String director = data[6].trim();
+                String cast = data[7].trim();
+
+                // ── SUMMARIES ──
+                String summaryEN = data[8].trim();
+                String summaryVI = data[9].trim();
+                String summaryJP = data[10].trim();
+
+                String imagePath = data[11].trim();
+                String roomId = data[12].trim();
+
+                Film.State state;
+                try {
+                    state = Film.State.valueOf(data[13].trim());
+                } catch (Exception e) {
+                    state = Film.State.ENDED; // fallback safety
+                }
+
+                // ── CREATE FILM ──
+                Film film = new Film(
+                        id,
+                        titleEN,
+                        duration,
+                        price,
+                        director,
+                        cast,
+                        summaryEN,
+                        imagePath,
+                        roomId,
+                        state
+                );
+
+                // ── I18N FIELDS ──
+                film.setTitleVI(titleVI);
+                film.setTitleJP(titleJP);
+
+                film.setSummaryVI(summaryVI);
+                film.setSummaryJP(summaryJP);
+
+                films.add(film);
             }
 
         } catch (Exception e) {
@@ -61,20 +103,31 @@ public class FilmDatabase {
     }
 
     // ───────────────── GET ALL FILMS ─────────────────
-    public static List<Film> getUniqueFilms() {
+    public static List<Film> getFilms() {
         if (films.isEmpty()) initDatabase();
         return films;
     }
 
-    // alias (giữ compatibility với code cũ)
-    public static List<Film> getFilms() {
-        return getUniqueFilms();
+    // alias
+    public static List<Film> getUniqueFilms() {
+        return getFilms();
     }
 
     // ───────────────── FIND BY ID ─────────────────
     public static Film getById(String id) {
         for (Film f : getFilms()) {
-            if (f.getCodeFilm().equals(id)) return f;
+            if (f.getCodeFilm().equals(id)) {
+                return f;
+            }
+        }
+        return null;
+    }
+    
+    public static Film findByCode(String code) {
+        for (Film f : films) {
+            if (f.getCodeFilm().equalsIgnoreCase(code)) {
+                return f;
+            }
         }
         return null;
     }

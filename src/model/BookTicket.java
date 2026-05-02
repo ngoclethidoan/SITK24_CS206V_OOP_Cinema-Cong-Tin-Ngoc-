@@ -1,24 +1,30 @@
 package model;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class BookTicket {
 
     private final Room room;
     private final Seat seat;
     private final Film film;
-    private final List<Item> items;
+    private final double price;
+    private final LocalDateTime time;
+    private String status;
 
-    public BookTicket(Room room, Seat seat, Film film) {
+    public BookTicket(Room room, Seat seat, Film film, double price) {
         this.room = room;
         this.seat = seat;
         this.film = film;
-        this.items = new ArrayList<>();
+        this.price = price;
+        this.time = LocalDateTime.now();
+        this.status = "BOOKED";
     }
 
     public Room getRoom() { return room; }
     public Seat getSeat() { return seat; }
     public Film getFilm() { return film; }
-    public List<Item> getItems() { return items; }
+    public double getPrice() { return price; }
+    public LocalDateTime getTime() { return time; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

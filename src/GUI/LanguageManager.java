@@ -69,6 +69,14 @@ public class LanguageManager {
     public static final String CART_NOT_LOGGED_IN = "cart.notLoggedIn";
     public static final String CART_SEAT          = "cart.seat";
     public static final String CART_TOTAL         = "cart.total";
+    public static final String CART_EMPTY = "cart.empty";
+    public static final String CART_PRICE = "cart.price";
+    
+    // Seat
+    public static final String SEAT_NOT_SELECTED = "seat.notSelected";
+    public static final String SEAT_SELECTED     = "seat.selected";
+    public static final String FILM_SEAT_AVAILABLE = "seat.available";
+    public static final String FILM_SEAT_UNAVAILABLE = "seat.unavailable";
 
     // Settings
     public static final String SETTINGS_TITLE     = "settings.title";
@@ -94,6 +102,12 @@ public class LanguageManager {
     public static final String LOGIN_ENTER_BOTH    = "login.enterBoth";
     public static final String LOGIN_WRONG_CREDS   = "login.wrongCreds";
     public static final String LOGIN_CREATE_ACCT   = "login.createAccount";
+    
+    // Register
+    public static final String REGISTER_USER_ID = "register.userId";
+    public static final String REGISTER_DISPLAY_NAME = "register.displayName";
+    public static final String REGISTER_USER_EXISTS = "register.userExists";
+    public static final String REGISTER_EMPTY = "register.empty";
 
     // Messages
     public static final String MSG_NOT_LOGGED_IN   = "msg.notLoggedIn";
@@ -104,11 +118,18 @@ public class LanguageManager {
     public static final String MSG_MUST_LOGIN_FIRST = "msg.mustLoginFirst";
     public static final String MSG_UPDATED          = "msg.updated";
     public static final String MSG_SETTINGS_COMING  = "msg.settingsComing";
+    
+    // User
+    public static final String USER_PENDING  = "USER_PENDING";
+    public static final String USER_BOOKED   = "USER_BOOKED";
+    public static final String USER_REFUND   = "USER_REFUND";
+    public static final String USER_HISTORY  = "USER_HISTORY";
 
     // ── Translation tables ────────────────────────────────────────────
     private static final Map<String, Map<Language, String>> table = new HashMap<>();
 
     static {
+        
         define(APP_TITLE,            "CNT Cinema",                 "CNT Rạp Chiếu Phim",         "CNTシネマ");
         define(BTN_LOGIN,            "Login",                      "Đăng nhập",                  "ログイン");
         define(BTN_LOGOUT,           "Logout",                     "Đăng xuất",                  "ログアウト");
@@ -133,6 +154,13 @@ public class LanguageManager {
         define(CART_NOT_LOGGED_IN,   "⚠ You have not logged in!",  "⚠ Bạn chưa đăng nhập!",     "⚠ ログインしていません！");
         define(CART_SEAT,            "Seat",                       "Ghế",                        "座席");
         define(CART_TOTAL,           "Total",                      "Tổng cộng",                  "合計");
+        define(CART_EMPTY,"Your cart is empty.","Giỏ hàng trống.","カートは空です");
+        define(CART_PRICE, "Price", "Giá","価格");
+        
+        define(SEAT_NOT_SELECTED, "You have not selected any seat", "Bạn chưa chọn ghế nào", "座席が選択されていません");
+        define(SEAT_SELECTED,   "Selected seats","Ghế đã chọn", "選択された座席");
+        define(FILM_SEAT_AVAILABLE, "Available", "Còn trống","空席");
+        define(FILM_SEAT_UNAVAILABLE,"Booked","Đã đặt","予約済み");
 
         define(SETTINGS_TITLE,       "Settings",                   "Cài đặt",                    "設定");
         define(SETTINGS_LANGUAGE,    "🌐 Language",                "🌐 Ngôn ngữ",               "🌐 言語");
@@ -160,6 +188,11 @@ public class LanguageManager {
                                      "Tên đăng nhập hoặc mật khẩu không đúng.",
                                      "ユーザー名またはパスワードが正しくありません。");
         define(LOGIN_CREATE_ACCT,    "Create Account",             "Tạo tài khoản",              "アカウント作成");
+        
+        define(REGISTER_USER_ID, "User ID",    "Tên đăng nhập",  "ユーザーID");
+        define(REGISTER_DISPLAY_NAME,    "Display Name",   "Tên hiển thị","表示名");
+        define(REGISTER_USER_EXISTS,  "User already exists",  "Người dùng đã tồn tại","ユーザーは既に存在します");
+        define(REGISTER_EMPTY,    "Please fill all fields",     "Vui lòng điền đầy đủ thông tin", "すべての項目を入力してください");
 
         define(MSG_NOT_LOGGED_IN,    "You have not logged in!",    "Bạn chưa đăng nhập!",        "ログインしていません！");
         define(MSG_SUCCESS,          "Success",                    "Thành công",                 "成功");
@@ -169,6 +202,16 @@ public class LanguageManager {
         define(MSG_MUST_LOGIN_FIRST, "Please log in first.",       "Vui lòng đăng nhập trước.",  "先にログインしてください。");
         define(MSG_UPDATED,          "Updated successfully!",      "Cập nhật thành công!",       "更新しました！");
         define(MSG_SETTINGS_COMING,  "Settings coming soon!",      "Tính năng sắp ra mắt!",      "近日公開！");
+        
+        // User status / history
+        define(USER_PENDING, "Pending", "Đang chờ", "保留中");
+        define(USER_BOOKED,  "Booked", "Đã đặt", "予約済み");
+        define(USER_REFUND,  "Refund", "Hoàn tiền", "返金");
+        define(USER_HISTORY, "History", "Lịch sử", "履歴");
+        define("user.pending.title", "Pending Confirm", "Chờ xác nhận", "確認待ち");
+        define("user.booked.title", "Booked Tickets", "Vé đã đặt", "予約済みチケット");
+        define("user.refund.title", "Refund Requests", "Yêu cầu hoàn tiền", "返金リクエスト");
+        define("user.history.title", "Booking History", "Lịch sử đặt vé", "予約履歴");
     }
 
     private static void define(String key, String en, String vi, String jp) {

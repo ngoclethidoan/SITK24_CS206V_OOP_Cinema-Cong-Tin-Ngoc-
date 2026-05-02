@@ -29,11 +29,11 @@ public class SettingPanel extends JPanel {
     private static final Color SUBTEXT = new Color(160, 160, 175);
     private static final Color SIDEBAR_SEL = new Color(40, 50, 75);
 
-    // Cross-platform font (Dialog = fallback cho cả Win/macOS, hỗ trợ Unicode/tiếng Việt)
+    // Cross-platform font (SansSerif = fallback cho cả Win/macOS, hỗ trợ Unicode/tiếng Việt)
     private static Font uiFont(int style, int size) {
-        Font f = new Font("Segoe UI", style, size);
-        if (!f.getFamily().equalsIgnoreCase("Segoe UI")) {
-            f = new Font("Dialog", style, size);
+        Font f = new Font("SansSerif UI", style, size);
+        if (!f.getFamily().equalsIgnoreCase("SansSerif UI")) {
+            f = new Font("SansSerif", style, size);
         }
         return f;
     }

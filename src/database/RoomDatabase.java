@@ -25,6 +25,9 @@ public class RoomDatabase {
             for (int j = 0; j < c; j++) {
 
                 String code = (char) ('A' + i) + "" + (j + 1);
+                
+                Seat seat = new StandardSeat(code, i, j, base);
+                seat.setRoom(room); 
 
                 room.setSeat(i, j,
                         new StandardSeat(code, i, j, base));
