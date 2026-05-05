@@ -111,7 +111,7 @@ public class SeatPanel extends JPanel {
             selectedSeats.add(seat);
         }
 
-        refreshAll();
+        refreshAll(); 
         refreshBottom();
     }
 
