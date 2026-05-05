@@ -85,7 +85,7 @@ public class LoginFrame extends JDialog {
         add(registerBtn);
 
         registerBtn.addActionListener(e -> {
-            dispose();
+//            dispose();
             new RegisterFrame(mainFrame);
         });
 

@@ -18,7 +18,7 @@ public class User {
         this.userId = userId;
         this.password = password;
         this.isVIP = false;
-        this.isAdmin = true;
+        this.isAdmin = false;
         this.bookingHistory = bookingHistory != null ? bookingHistory : new ArrayList<>();
     }
 
