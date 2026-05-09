@@ -219,7 +219,12 @@ public class MainFrame extends JFrame {
         btn.setBorder(BorderFactory.createEmptyBorder(7, 16, 7, 16));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
-
+    
+    public void showItemPanel(Film film, List<CartItem> selectedSeats) {
+    mainPanel.add(new ItemPanel(this, film, selectedSeats), "ITEM");
+    cardLayout.show(mainPanel, "ITEM");
+}
+    
     public boolean isLoggedIn()     { return isLoggedIn; }
     public User    getCurrentUser() { return currentUser; }
 
