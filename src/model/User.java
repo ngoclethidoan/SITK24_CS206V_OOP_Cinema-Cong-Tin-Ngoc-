@@ -2,6 +2,7 @@ package model;
 
 import java.util.List;
 import java.util.ArrayList;
+import model.SnackCartItem;
 
 public class User {
     private String name;
@@ -10,8 +11,9 @@ public class User {
     private boolean isVIP;
     private boolean isAdmin;
 
-    private List<CartItem> cart = new ArrayList<>();
-    private List<BookTicket> bookingHistory = new ArrayList<>();
+    private List<CartItem>      cart           = new ArrayList<>();
+    private List<SnackCartItem> snackCart      = new ArrayList<>();
+    private List<BookTicket>    bookingHistory = new ArrayList<>();
 
     public User(String name, String userId, String password, List<BookTicket> bookingHistory) {
         this.name = name;
@@ -28,8 +30,16 @@ public class User {
     public boolean isAdmin()    { return isAdmin; }
     public boolean isVIP()      { return isVIP; }
 
-    public List<CartItem>    getCart()           { return cart; }
-    public List<BookTicket>  getBookingHistory() { return bookingHistory; }
+    public List<CartItem>      getCart()           { return cart; }
+    public List<SnackCartItem> getSnackCart()       { return snackCart; }
+    public List<BookTicket>    getBookingHistory()  { return bookingHistory; }
+
+    public void addSnackToCart(SnackCartItem item) { snackCart.add(item); }
+
+    /** Xoá các SnackCartItem đã thanh toán khỏi snackCart */
+    public void checkoutSnacks(List<SnackCartItem> paid) {
+        snackCart.removeAll(paid);
+    }
 
     public void setName(String newName)         { this.name     = newName; }
     public void setUserId(String newId)         { this.userId   = newId; }
