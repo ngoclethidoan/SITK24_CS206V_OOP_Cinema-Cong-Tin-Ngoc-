@@ -1,186 +1,282 @@
 package GUI;
 
+import database.BookingDatabase;
 import model.*;
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static GUI.LanguageManager.t;
 
 public class PayPanel extends JPanel {
 
-    private final MainFrame mainFrame;
-    private final List<CartItem> items;   // ⭐ nhận từ SeatPanel / CartPanel
+    private final MainFrame           mainFrame;
+    private final List<CartItem>      ticketItems;
+    private final List<SnackCartItem> snackItems;
+    private final boolean             fromCart;
 
     private JLabel totalLabel;
-    private JPanel listPanel;
-    
-    private final boolean fromCart;
 
-    public PayPanel(MainFrame mainFrame, List<CartItem> items, boolean fromCart) {
-        this.mainFrame = mainFrame;
-        this.items = items;
-        this.fromCart = fromCart;
+    public PayPanel(MainFrame mainFrame,
+                    List<CartItem>      ticketItems,
+                    List<SnackCartItem> snackItems,
+                    boolean             fromCart) {
+        this.mainFrame   = mainFrame;
+        this.ticketItems = ticketItems;
+        this.snackItems  = snackItems;
+        this.fromCart    = fromCart;
 
         setLayout(new BorderLayout());
         setBackground(new Color(20, 20, 20));
-
         buildUI();
-
-        LanguageManager.getInstance()
-                .addChangeListener(this::reload);
+        LanguageManager.getInstance().addChangeListener(this::reload);
     }
-    // ================= ROOT =================
+
+    /** Constructor tương thích cũ (chỉ vé, không snack) */
+    public PayPanel(MainFrame mainFrame, List<CartItem> ticketItems, boolean fromCart) {
+        this(mainFrame, ticketItems, new ArrayList<>(), fromCart);
+    }
+
+    private void reload() { buildUI(); }
+
     private void buildUI() {
         removeAll();
-
-        add(top(), BorderLayout.NORTH);
+        add(top(),    BorderLayout.NORTH);
         add(center(), BorderLayout.CENTER);
         add(bottom(), BorderLayout.SOUTH);
-
         revalidate();
         repaint();
     }
 
-    private void reload() {
-        buildUI();
-    }
-
-    // ================= TOP =================
+    // ── Top ───────────────────────────────────────────────────────────
     private JPanel top() {
-
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBackground(getBackground());
-
         JButton back = new JButton(t(LanguageManager.BTN_BACK));
-
         back.addActionListener(e -> {
-            if (fromCart) {
-                mainFrame.showCart();
-            } else {
-                mainFrame.showHome();
-            }
+            if (fromCart) mainFrame.showCart();
+            else          mainFrame.showHome();
         });
-
         p.add(back);
         return p;
     }
 
-    // ================= CENTER =================
+    // ── Center ────────────────────────────────────────────────────────
     private JScrollPane center() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(getBackground());
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
-        listPanel = new JPanel();
-        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setBackground(getBackground());
+        double ticketTotal = 0;
+        double snackTotal  = 0;
 
-        double total = 0;
-
-        for (CartItem i : items) {
-
-            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-            row.setBackground(getBackground());
-
-            // ⭐ POSTER
-            JLabel poster = new JLabel();
-            ImageIcon icon = new ImageIcon(i.getFilm().getImagePath());
-
-            if (icon.getIconWidth() > 0) {
-                Image img = icon.getImage()
-                        .getScaledInstance(60, 85, Image.SCALE_SMOOTH);
-                poster.setIcon(new ImageIcon(img));
-            } else {
-                poster.setPreferredSize(new Dimension(60, 85));
-                poster.setText("No Image");
-                poster.setForeground(Color.GRAY);
+        // Vé phim
+        if (!ticketItems.isEmpty()) {
+            panel.add(sectionLabel("🎬  Vé phim"));
+            panel.add(Box.createVerticalStrut(6));
+            for (CartItem i : ticketItems) {
+                panel.add(buildTicketRow(i));
+                panel.add(Box.createVerticalStrut(8));
+                ticketTotal += i.getSeat().computePrice();
             }
-
-            // ⭐ INFO
-            JPanel info = new JPanel();
-            info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-            info.setBackground(getBackground());
-
-            JLabel title = new JLabel(i.getFilm().getTitle());
-            title.setForeground(Color.WHITE);
-            title.setFont(new Font("Dialog", Font.BOLD, 14));
-
-            JLabel seat = new JLabel(
-                    t(LanguageManager.CART_SEAT) + ": " + i.getSeat().getCodeSeat()
-            );
-            seat.setForeground(Color.LIGHT_GRAY);
-
-            info.add(title);
-            info.add(seat);
-
-            row.add(poster);
-            row.add(info);
-
-            listPanel.add(row);
-
-            total += i.getSeat().computePrice();
+            JLabel tl = new JLabel("Tổng vé: " + String.format("%,.0f VND", ticketTotal));
+            tl.setForeground(new Color(100, 220, 100));
+            tl.setFont(new Font("Dialog", Font.BOLD, 13));
+            panel.add(tl);
+            panel.add(Box.createVerticalStrut(14));
         }
 
+        // Bắp/Nước
+        if (!snackItems.isEmpty()) {
+            panel.add(separator());
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(sectionLabel("🍿  Bắp & Nước"));
+            panel.add(Box.createVerticalStrut(6));
+            for (SnackCartItem si : snackItems) {
+                panel.add(buildSnackRow(si));
+                panel.add(Box.createVerticalStrut(6));
+                snackTotal += si.getTotalPrice();
+            }
+            JLabel sl = new JLabel("Tổng bắp/nước: " + String.format("%,.0f VND", snackTotal));
+            sl.setForeground(new Color(255, 200, 50));
+            sl.setFont(new Font("Dialog", Font.BOLD, 13));
+            panel.add(sl);
+            panel.add(Box.createVerticalStrut(14));
+        }
+
+        // Grand total
+        panel.add(separator());
+        panel.add(Box.createVerticalStrut(10));
+        double grand = ticketTotal + snackTotal;
         totalLabel = new JLabel(
-                t(LanguageManager.CART_TOTAL)
-                        + ": " + String.format("%,.0f", total) + " VND"
+            t(LanguageManager.CART_TOTAL) + ": " + String.format("%,.0f VND", grand)
         );
+        totalLabel.setForeground(new Color(255, 215, 0));
+        totalLabel.setFont(new Font("Dialog", Font.BOLD, 17));
+        panel.add(totalLabel);
 
-        totalLabel.setForeground(Color.YELLOW);
-
-        listPanel.add(Box.createVerticalStrut(10));
-        listPanel.add(totalLabel);
-
-        JScrollPane sp = new JScrollPane(listPanel);
+        JScrollPane sp = new JScrollPane(panel);
         sp.setBorder(null);
-        sp.getVerticalScrollBar().setUnitIncrement(20); // ⭐ smooth scroll
-        sp.getHorizontalScrollBar().setUnitIncrement(20);
-
-
+        sp.getVerticalScrollBar().setUnitIncrement(16);
         return sp;
     }
 
-    // ================= BOTTOM =================
-    private JPanel bottom() {
+    private JPanel buildTicketRow(CartItem i) {
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        row.setBackground(new Color(30, 30, 30));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
+        JLabel poster = new JLabel();
+        ImageIcon icon = new ImageIcon(i.getFilm().getImagePath());
+        if (icon.getIconWidth() > 0) {
+            poster.setIcon(new ImageIcon(icon.getImage()
+                    .getScaledInstance(55, 78, Image.SCALE_SMOOTH)));
+        } else {
+            poster.setPreferredSize(new Dimension(55, 78));
+            poster.setForeground(Color.GRAY);
+        }
+
+        JPanel info = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setBackground(new Color(30, 30, 30));
+
+        JLabel title = new JLabel(i.getFilm().getTitle());
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Dialog", Font.BOLD, 13));
+
+        JLabel seat = new JLabel(t(LanguageManager.CART_SEAT) + ": " + i.getSeat().getCodeSeat());
+        seat.setForeground(Color.LIGHT_GRAY);
+
+        JLabel price = new JLabel(String.format("%,.0f VND", i.getSeat().computePrice()));
+        price.setForeground(new Color(100, 200, 100));
+
+        info.add(title); info.add(seat); info.add(price);
+        row.add(poster); row.add(info);
+        return row;
+    }
+
+    private JPanel buildSnackRow(SnackCartItem si) {
+        JPanel row = new JPanel();
+        row.setLayout(new BoxLayout(row, BoxLayout.Y_AXIS));
+        row.setBackground(new Color(38, 30, 20));
+        row.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(70, 55, 20)),
+            BorderFactory.createEmptyBorder(7, 10, 7, 10)
+        ));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 999));
+
+        for (Item it : si.getItems()) {
+            JLabel lbl = new JLabel(
+                "  • " + it.getName()
+                + "  x" + it.getQuantity()
+                + "   " + String.format("%,.0f VND", it.getPrice() * it.getQuantity())
+            );
+            lbl.setForeground(new Color(220, 190, 120));
+            row.add(lbl);
+        }
+        return row;
+    }
+
+    // ── Bottom ────────────────────────────────────────────────────────
+    private JPanel bottom() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(new Color(30, 30, 30));
+        p.setBackground(new Color(28, 28, 28));
+        p.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
         JButton book = new JButton(t(LanguageManager.BTN_BOOK_NOW));
-
-        book.addActionListener(e -> book());
+        book.setBackground(new Color(46, 204, 113));
+        book.setForeground(Color.WHITE);
+        book.setFont(new Font("Dialog", Font.BOLD, 14));
+        book.setFocusPainted(false);
+        book.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        book.addActionListener(e -> confirmAndBook());
 
         p.add(book, BorderLayout.EAST);
-
         return p;
     }
 
-    // ================= BOOK ACTION =================
-    private void book() {
-
+    // ─────────────────────── BOOK LOGIC ──────────────────────────────
+    private void confirmAndBook() {
         User u = mainFrame.getCurrentUser();
+        double grand = calcGrand();
 
-        for (CartItem i : items) {
+        int confirm = JOptionPane.showConfirmDialog(
+            mainFrame,
+            "Xác nhận thanh toán  " + String.format("%,.0f VND", grand) + "?",
+            "Xác nhận", JOptionPane.YES_NO_OPTION
+        );
+        if (confirm != JOptionPane.YES_OPTION) return;
 
-            // 1. set ghế đã đặt
-            i.getSeat().setState(Seat.State.booked);
+        // Xử lý vé
+        for (int idx = 0; idx < ticketItems.size(); idx++) {
+            CartItem ci = ticketItems.get(idx);
+            ci.getSeat().setState(Seat.State.booked);
 
-            // 2. tạo ticket history
+            List<Item> flat = new ArrayList<>();
+            if (idx == 0)
+                for (SnackCartItem si : snackItems) flat.addAll(si.getItems());
+
             BookTicket ticket = new BookTicket(
-                    i.getSeat().getRoom(),
-                    i.getSeat(),
-                    i.getFilm(),
-                    i.getSeat().computePrice()
+                ci.getSeat().getRoom(), ci.getSeat(), ci.getFilm(),
+                ci.getSeat().computePrice(), flat
             );
-
-                // 3. thêm vào lịch sử
-                u.addBooking(ticket);
-            }
-
-        // Chỉ xoá cart nếu đi từ cart
-        if (fromCart) {
-            u.getCart().removeIf(CartItem::isSelected);
+            u.addBooking(ticket);
+            BookingDatabase.save(u.getUserId(), ticket, idx == 0 ? flat : null);
         }
 
+        // Nếu chỉ có bắp/nước (không có vé)
+        if (ticketItems.isEmpty() && !snackItems.isEmpty()) {
+            List<Item> flat = new ArrayList<>();
+            for (SnackCartItem si : snackItems) flat.addAll(si.getItems());
+            BookTicket snackOnly = new BookTicket(null, null, null, 0, flat);
+            u.addBooking(snackOnly);
+        }
+
+        // Chuyển snack sang lịch sử
+        u.checkoutSnacks(new ArrayList<>(snackItems));
+
+        // Xoá vé khỏi cart
+        if (fromCart) u.getCart().removeIf(CartItem::isSelected);
+
         mainFrame.refreshCartBadge();
+        showSuccess(grand);
+    }
+
+    private double calcGrand() {
+        double t = ticketItems.stream().mapToDouble(i -> i.getSeat().computePrice()).sum();
+        double s = snackItems.stream().mapToDouble(SnackCartItem::getTotalPrice).sum();
+        return t + s;
+    }
+
+    private void showSuccess(double grand) {
+        StringBuilder sb = new StringBuilder("✅  Đặt hàng thành công!\n\n");
+        if (!ticketItems.isEmpty())
+            sb.append("🎬  Vé: ").append(ticketItems.size()).append(" vé\n");
+        if (!snackItems.isEmpty()) {
+            sb.append("🍿  Bắp/Nước:\n");
+            for (SnackCartItem si : snackItems)
+                for (Item it : si.getItems())
+                    sb.append("  • ").append(it.getName()).append(" x").append(it.getQuantity()).append("\n");
+        }
+        sb.append("\nTổng thanh toán: ").append(String.format("%,.0f VND", grand));
+        JOptionPane.showMessageDialog(mainFrame, sb.toString(), "Thành công", JOptionPane.INFORMATION_MESSAGE);
         mainFrame.showHome();
+    }
+
+    private JLabel sectionLabel(String text) {
+        JLabel lbl = new JLabel(text);
+        lbl.setForeground(new Color(200, 200, 200));
+        lbl.setFont(new Font("Dialog", Font.BOLD, 14));
+        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return lbl;
+    }
+
+    private JSeparator separator() {
+        JSeparator sep = new JSeparator();
+        sep.setForeground(new Color(55, 55, 55));
+        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        return sep;
     }
 }

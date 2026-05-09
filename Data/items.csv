@@ -1,1 +1,11 @@
-
+codeItem|name|nameVI|nameJP|price|quantity|type
+CORN01|Popcorn Thường|Bắp rang thường|レギュラーポップコーン|25000|100|CORN
+CORN02|Popcorn Caramel|Bắp rang caramel|キャラメルポップコーン|25000|100|CORN
+CORN03|Popcorn Phô mai|Bắp rang phô mai|チーズポップコーン|25000|100|CORN
+BEV01|Coca Cola|Coca Cola|コカ・コーラ|25000|150|BEVERAGE
+BEV02|7UP|7UP|セブンアップ|25000|150|BEVERAGE
+BEV03|Milo|Milo|マイロ|25000|150|BEVERAGE
+BEV04|Trà|Trà|お茶|25000|150|BEVERAGE
+COMBO01|Combo Bắp thường + Nước|Combo Bắp thường + Nước|コンボ1|45000|80|COMBO
+COMBO02|Combo Bắp Caramel + Nước|Combo Bắp Caramel + Nước|コンボ2|45000|80|COMBO
+COMBO03|Combo Bắp Phô mai + Nước|Combo Bắp Phô mai + Nước|コンボ3|45000|80|COMBO

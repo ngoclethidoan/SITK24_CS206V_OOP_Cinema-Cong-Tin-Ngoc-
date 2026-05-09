@@ -2,6 +2,7 @@ package GUI;
 
 import database.*;
 import model.*;
+import model.SnackCartItem;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -90,7 +91,9 @@ public class MainFrame extends JFrame {
             right.add(loginBtn);
         } else {
             int cartCount = currentUser != null
-                ? currentUser.getCart().stream().mapToInt(CartItem::getQuantity).sum() : 0;
+                ? currentUser.getCart().stream().mapToInt(CartItem::getQuantity).sum()
+                  + currentUser.getSnackCart().stream().mapToInt(SnackCartItem::getTotalQty).sum()
+                : 0;
             String cartLabel = cartCount > 0
                 ? t(LanguageManager.BTN_CART) + " (" + cartCount + ")" : t(LanguageManager.BTN_CART);
 
@@ -98,10 +101,15 @@ public class MainFrame extends JFrame {
             styleButton(cartBtn, new Color(39, 120, 80));
             cartBtn.addActionListener(e -> showCart());
 
+            JButton snackBtn = new JButton("🍿 Bắp & Nước");
+            styleButton(snackBtn, new Color(160, 110, 20));
+            snackBtn.addActionListener(e -> showSnackOrder());
+
             JButton adminBtn = new JButton("👤 " + currentUsername);
             styleButton(adminBtn, new Color(70, 70, 70));
             adminBtn.addActionListener(e -> showUserPanel());
 
+            right.add(snackBtn);
             right.add(cartBtn);
             right.add(adminBtn);
         }
@@ -184,6 +192,11 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "CART");
     }
 
+    public void showSnackOrder() {
+        mainPanel.add(new SnackOrderPanel(this), "SNACK");
+        cardLayout.show(mainPanel, "SNACK");
+    }
+
     public void showSeatPanel(Film film, boolean bookMode) {
         mainPanel.add(new SeatPanel(film, this, bookMode), "SEAT");
         cardLayout.show(mainPanel, "SEAT");
@@ -191,6 +204,11 @@ public class MainFrame extends JFrame {
 
     public void showPay(List<CartItem> items, boolean fromCart) {
         mainPanel.add(new PayPanel(this, items, fromCart), "PAY");
+        cardLayout.show(mainPanel, "PAY");
+    }
+
+    public void showPay(List<CartItem> items, List<SnackCartItem> snacks, boolean fromCart) {
+        mainPanel.add(new PayPanel(this, items, snacks, fromCart), "PAY");
         cardLayout.show(mainPanel, "PAY");
     }
 
@@ -220,10 +238,10 @@ public class MainFrame extends JFrame {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
     
-    public void showItemPanel(Film film, List<CartItem> selectedSeats) {
-    mainPanel.add(new ItemPanel(this, film, selectedSeats), "ITEM");
-    cardLayout.show(mainPanel, "ITEM");
-}
+//    public void showItemPanel(Film film, List<CartItem> selectedSeats) {
+//    mainPanel.add(new ItemPanel(this, film, selectedSeats), "ITEM");
+//    cardLayout.show(mainPanel, "ITEM");
+//}
     
     public boolean isLoggedIn()     { return isLoggedIn; }
     public User    getCurrentUser() { return currentUser; }
@@ -252,6 +270,7 @@ public class MainFrame extends JFrame {
 
         FilmDatabase.initDatabase();
         RoomDatabase.init();
+        ItemDatabase.initDatabase();
         SwingUtilities.invokeLater(MainFrame::new);
     }
 }
