@@ -1,6 +1,5 @@
 package model;
 
-import GUI.LanguageManager;
 
 public class Film {
 
@@ -65,26 +64,15 @@ public class Film {
     public State getState() { return state; }
 
     // ───────────────── i18n TITLE ─────────────────
-    public String getTitle() {
-        LanguageManager.Language lang = LanguageManager.getInstance().getCurrent();
+    public String getTitle()   { return title; }
+    public String getTitleVI() { return titleVI != null ? titleVI : title; }
+    public String getTitleJP() { return titleJP != null ? titleJP : title; }
 
-        return switch (lang) {
-            case VIETNAMESE -> titleVI != null ? titleVI : title;
-            case JAPANESE -> titleJP != null ? titleJP : title;
-            default -> title;
-        };
-    }
 
     // ───────────────── i18n SUMMARY ─────────────────
-    public String getSummary() {
-        LanguageManager.Language lang = LanguageManager.getInstance().getCurrent();
-
-        return switch (lang) {
-            case VIETNAMESE -> summaryVI != null ? summaryVI : summary;
-            case JAPANESE -> summaryJP != null ? summaryJP : summary;
-            default -> summary;
-        };
-    }
+    public String getSummary()   { return summary; }
+    public String getSummaryVI() { return summaryVI != null ? summaryVI : summary; }
+    public String getSummaryJP() { return summaryJP != null ? summaryJP : summary; }
 
     // ───────────────── SETTERS (i18n fields) ─────────────────
     public void setTitleVI(String titleVI) {

@@ -3,13 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package service;
-
+import interfaces.IFilmService;
 /**
  *
  * @author Administrator
  */
 import model.*;
-public class FilmService {
+public class FilmService implements IFilmService{
     
     // Changes of the film by Adminitrator
     public void changeState(Film film, Film.State state) {

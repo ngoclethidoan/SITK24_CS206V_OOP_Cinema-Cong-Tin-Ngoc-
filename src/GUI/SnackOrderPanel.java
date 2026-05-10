@@ -1,5 +1,6 @@
 package GUI;
 
+import model.LanguageManager;
 import database.ItemDatabase;
 import model.*;
 

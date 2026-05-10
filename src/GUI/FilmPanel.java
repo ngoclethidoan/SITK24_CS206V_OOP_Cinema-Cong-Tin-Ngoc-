@@ -1,5 +1,8 @@
 package GUI;
 
+import model.LanguageManager;
+import static model.LanguageManager.Language.JAPANESE;
+import static model.LanguageManager.Language.VIETNAMESE;
 import model.*;
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +25,8 @@ public class FilmPanel extends JPanel {
 
         buildUI();
     }
-
+    
+    
     // ───────────────────────── RELOAD ─────────────────────────
     private void reloadText() {
         removeAll();
@@ -30,9 +34,29 @@ public class FilmPanel extends JPanel {
         revalidate();
         repaint();
     }
-
+    
+    private JLabel infoLabel(String text) {
+    JLabel lbl = new JLabel(text);
+    lbl.setForeground(new Color(200, 200, 200));
+    lbl.setFont(new Font("Dialog", Font.PLAIN, 16));
+    lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+    return lbl;
+}
     // ───────────────────────── BUILD UI ─────────────────────────
     private void buildUI() {
+        String display = switch (LanguageManager.getInstance().getCurrent()) {
+        case VIETNAMESE -> film.getTitleVI();
+        case JAPANESE   -> film.getTitleJP();
+        default         -> film.getTitle();
+};
+        // FilmPanel.java — also localize the summary:
+String summary = switch (LanguageManager.getInstance().getCurrent()) {
+    case VIETNAMESE -> film.getSummaryVI();  // ← now works
+    case JAPANESE   -> film.getSummaryJP();  // ← now works
+    default         -> film.getSummary();
+};
+
+
 
         // TOP PANEL
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -66,7 +90,7 @@ public class FilmPanel extends JPanel {
         }
 
         // Title
-        JLabel lblName = new JLabel(film.getTitle());
+        JLabel lblName = new JLabel(display);
         lblName.setForeground(Color.WHITE);
         lblName.setFont(new Font("Dialog", Font.BOLD, 32));
         lblName.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -75,21 +99,10 @@ public class FilmPanel extends JPanel {
         centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // INFO (i18n)
-        JLabel lblInfo = new JLabel(
-            "<html><div style='text-align:center; color:#CCCCCC;'>" +
-
-            "<b>" + LanguageManager.t(LanguageManager.FILM_DIRECTOR) + ":</b> "
-            + film.getDirector() + "<br>" +
-
-            "<b>" + LanguageManager.t(LanguageManager.FILM_CAST) + ":</b> "
-            + film.getCast().replace('|', ',') + "<br>" +
-
-            "<b>" + LanguageManager.t(LanguageManager.FILM_DURATION) + ":</b> "
-            + film.getDuration() + " "
-            + LanguageManager.t(LanguageManager.FILM_MINS) +
-
-            "</div></html>"
-        );
+        JLabel lblInfo = new JLabel();
+        centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DIRECTOR) + ": " + film.getDirector()));
+centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_CAST) + ": " + film.getCast().replace('|', ',')));
+centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": " + film.getDuration() + " mins"));
 
         lblInfo.setFont(new Font("Dialog", Font.PLAIN, 16));
         lblInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -98,7 +111,7 @@ public class FilmPanel extends JPanel {
         centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
         // Summary
-        JTextArea txtSummary = new JTextArea(film.getSummary());
+        JTextArea txtSummary = new JTextArea(summary); // ← use summary variable
         txtSummary.setLineWrap(true);
         txtSummary.setWrapStyleWord(true);
         txtSummary.setEditable(false);
@@ -142,20 +155,11 @@ public class FilmPanel extends JPanel {
         styleButton(btnBookNow, new Color(46, 204, 113));
 
         btnBookNow.addActionListener(e -> {
-            if (!parent.isLoggedIn()) {
-                JOptionPane.showMessageDialog(this, "You have not Login!");
-            } else {
-                System.out.println("Opening booking for: " + film.getTitle());
-            }
-            if (!parent.isLoggedIn()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN)
-                );
-                return;
-            }
-
-            parent.showSeatPanel(film, true); // 🔵 BOOK MODE
+        if (!parent.isLoggedIn()) {
+        JOptionPane.showMessageDialog(this, LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN));
+        return;
+        }
+        parent.showSeatPanel(film, true);
         });
 
         actionPanel.add(btnAddToCart);
@@ -165,6 +169,8 @@ public class FilmPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(actionPanel, BorderLayout.SOUTH);
+        
+        
     }
 
     // ───────────────────────── STYLE ─────────────────────────

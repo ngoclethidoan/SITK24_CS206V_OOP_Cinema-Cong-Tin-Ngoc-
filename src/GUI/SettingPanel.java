@@ -1,5 +1,6 @@
 package GUI;
 
+import model.LanguageManager;
 import database.UserDatabase;
 import model.User;
 
@@ -8,7 +9,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import static GUI.LanguageManager.t;
+import static model.LanguageManager.t;
 
 /**
  * SettingPanel – extends JPanel (nhúng vào CardLayout của MainFrame). 3 tab:

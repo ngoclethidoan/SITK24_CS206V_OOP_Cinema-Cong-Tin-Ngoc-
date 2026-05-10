@@ -1,5 +1,5 @@
 package service;
-
+import interfaces.IBookingService;
 import database.BookingDatabase;
 import model.*;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  *   3. Sau mỗi thao tác book/checkout, tự động lưu vào bookings.csv
  *      thông qua BookingDatabase.save()
  */
-public class BookingService {
+public class BookingService implements IBookingService{
 
     private SeatService seatService = new SeatService();
 

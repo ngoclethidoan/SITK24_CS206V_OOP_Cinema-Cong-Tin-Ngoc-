@@ -1,5 +1,6 @@
 package GUI;
 
+import model.LanguageManager;
 import database.*;
 import model.*;
 import model.SnackCartItem;
@@ -8,7 +9,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.List;
 
-import static GUI.LanguageManager.t;
+import static model.LanguageManager.t;
 
 public class MainFrame extends JFrame {
 
@@ -212,7 +213,8 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "PAY");
     }
 
-    /** Mở Settings dưới dạng Panel trong CardLayout */
+    /** Mở Settings dưới d
+     * ạng Panel trong CardLayout */
     public void showSettings() {
         mainPanel.add(new SettingPanel(this), "SETTINGS");
         cardLayout.show(mainPanel, "SETTINGS");

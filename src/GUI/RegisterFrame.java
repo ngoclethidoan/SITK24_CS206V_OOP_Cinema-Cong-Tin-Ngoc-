@@ -1,17 +1,15 @@
 package GUI;
 
-import static GUI.LanguageManager.REGISTER_DISPLAY_NAME;
-import database.UserDatabase;
-import model.User;
-
+import model.LanguageManager;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
-import static GUI.LanguageManager.t;
+
+import static model.LanguageManager.t;
+import service.UserService;
 
 public class RegisterFrame extends JDialog {
-
+    private final UserService userService = new UserService();
     public RegisterFrame(MainFrame mainFrame) {
 
         super(mainFrame, t(LanguageManager.LOGIN_CREATE_ACCT), true);
@@ -39,7 +37,7 @@ public class RegisterFrame extends JDialog {
 
         JTextField idField = field(160, 58);
         add(idField);
-
+        
         // ── DISPLAY NAME ──────────────────────
         JLabel nameLbl = new JLabel(t(LanguageManager.REGISTER_DISPLAY_NAME));
         nameLbl.setForeground(Color.LIGHT_GRAY);
@@ -87,30 +85,27 @@ public class RegisterFrame extends JDialog {
             String userId = idField.getText().trim();
             String name = nameField.getText().trim();
             String pass = new String(passField.getPassword());
+            
 
-            // ❌ EMPTY CHECK (i18n)
+            // Step 1: empty check FIRST, before calling anything
             if (userId.isEmpty() || name.isEmpty() || pass.isEmpty()) {
                 statusLbl.setText(t(LanguageManager.REGISTER_EMPTY));
                 statusLbl.setForeground(Color.RED);
                 return;
             }
 
-            // ❌ EXIST CHECK (i18n)
-            if (UserDatabase.userIdExists(userId)) {
+            /// ✅ Step 2: let UserService handle everything (existence check + save)
+            boolean success = userService.register(userId, name, pass);
+
+            if (!success) {
+                // register() returns false only when user already exists
                 statusLbl.setText(t(LanguageManager.REGISTER_USER_EXISTS));
                 statusLbl.setForeground(Color.RED);
                 return;
             }
 
-            // ✅ CREATE USER
-            User u = new User(name, userId, pass, new ArrayList<>());
-            UserDatabase.addUser(u);
-            UserDatabase.save();
-
-            // ✅ SUCCESS (i18n)
             statusLbl.setText(t(LanguageManager.MSG_SUCCESS));
             statusLbl.setForeground(Color.GREEN);
-
             Timer timer = new Timer(1200, ev -> dispose());
             timer.setRepeats(false);
             timer.start();

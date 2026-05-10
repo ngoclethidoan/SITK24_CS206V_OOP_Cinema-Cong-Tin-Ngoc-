@@ -3,13 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package service;
-
+import interfaces.IItemService;
 /**
  *
  * @author Administrator
  */
 import model.*;
-public class ItemService {
+public class ItemService implements IItemService {
     
     
     // Manage the items selected

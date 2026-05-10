@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package GUI;
+package model;
 
 import java.util.*;
 
@@ -273,8 +273,8 @@ public class LanguageManager {
 
     public void setLanguage(Language lang) {
         this.current = lang;
-        listeners.forEach(Runnable::run);
-    }
+        new ArrayList<>(listeners).forEach(Runnable::run);
+}
 
     public void addChangeListener(Runnable r) { listeners.add(r); }
     public void removeChangeListener(Runnable r) { listeners.remove(r); }

@@ -1,5 +1,6 @@
 package GUI;
 
+import model.LanguageManager;
 import database.FilmDatabase;
 import model.Film;
 

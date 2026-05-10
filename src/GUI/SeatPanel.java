@@ -1,5 +1,6 @@
     package GUI;
 
+import model.LanguageManager;
 import model.*;
 import database.RoomDatabase;
 

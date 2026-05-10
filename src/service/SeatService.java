@@ -3,20 +3,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package service;
-
+import interfaces.ISeatService;
 /**
  *
  * @author Administrator
  */
 import model.*;
-public class SeatService {
+public class SeatService implements ISeatService {
     
     // Manage selection
     public void select(Seat seat) {
-        if (!seat.isAvailable()) {
-            throw new IllegalStateException("Seat: " + seat.getCodeSeat() + " is not available");
-        }
+    if (!seat.isAvailable()) {
+        throw new IllegalStateException("Seat " + seat.getCodeSeat() + " is not available");
     }
+    seat.setState(Seat.State.booked); // ← ADD THIS LINE
+}
     
     // Manage cancellation
     public void cancel(Seat seat) {

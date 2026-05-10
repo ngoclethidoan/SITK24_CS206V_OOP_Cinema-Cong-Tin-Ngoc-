@@ -1,17 +1,20 @@
 package GUI;
 
+import model.LanguageManager;
 import database.UserDatabase;
 import model.User;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static GUI.LanguageManager.t;
+import static model.LanguageManager.t;
+import service.UserService;
 
 public class LoginFrame extends JDialog {
 
     private boolean isProcessing = false;
-
+    private final UserService userService = new UserService();
+    
     public LoginFrame(MainFrame mainFrame) {
 
         setTitle(t(LanguageManager.LOGIN_TITLE));

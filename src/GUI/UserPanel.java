@@ -1,12 +1,13 @@
 package GUI;
 
+import model.LanguageManager;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import model.BookTicket;
 import model.*;
 
-import static GUI.LanguageManager.t;
+import static model.LanguageManager.t;
 
 public class UserPanel extends JPanel {
 

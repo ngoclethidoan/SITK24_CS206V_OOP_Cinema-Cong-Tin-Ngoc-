@@ -1,13 +1,14 @@
 package GUI;
 
+import model.LanguageManager;
 import database.BookingDatabase;
 import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static GUI.LanguageManager.t;
+import service.PaymentService;
+import static model.LanguageManager.t;
 
 public class PayPanel extends JPanel {
 
@@ -15,7 +16,7 @@ public class PayPanel extends JPanel {
     private final List<CartItem>      ticketItems;
     private final List<SnackCartItem> snackItems;
     private final boolean             fromCart;
-
+    private final PaymentService paymentService = new PaymentService();
     private JLabel totalLabel;
 
     public PayPanel(MainFrame mainFrame,
@@ -206,7 +207,7 @@ public class PayPanel extends JPanel {
     // ─────────────────────── BOOK LOGIC ──────────────────────────────
     private void confirmAndBook() {
         User u = mainFrame.getCurrentUser();
-        double grand = calcGrand();
+        double grand = paymentService.calcTotal(ticketItems, snackItems);
 
         int confirm = JOptionPane.showConfirmDialog(
             mainFrame,
@@ -216,45 +217,14 @@ public class PayPanel extends JPanel {
         );
         if (confirm != JOptionPane.YES_OPTION) return;
 
-        // Xử lý vé
-        for (int idx = 0; idx < ticketItems.size(); idx++) {
-            CartItem ci = ticketItems.get(idx);
-            ci.getSeat().setState(Seat.State.booked);
-
-            List<Item> flat = new ArrayList<>();
-            if (idx == 0)
-                for (SnackCartItem si : snackItems) flat.addAll(si.getItems());
-
-            BookTicket ticket = new BookTicket(
-                ci.getSeat().getRoom(), ci.getSeat(), ci.getFilm(),
-                ci.getSeat().computePrice(), flat
-            );
-            u.addBooking(ticket);
-            BookingDatabase.save(u.getUserId(), ticket, idx == 0 ? flat : null);
-        }
-
-        // Nếu chỉ có bắp/nước (không có vé)
-        if (ticketItems.isEmpty() && !snackItems.isEmpty()) {
-            List<Item> flat = new ArrayList<>();
-            for (SnackCartItem si : snackItems) flat.addAll(si.getItems());
-            BookTicket snackOnly = new BookTicket(null, null, null, 0, flat);
-            u.addBooking(snackOnly);
-        }
-
-        // Chuyển snack sang lịch sử
-        u.checkoutSnacks(new ArrayList<>(snackItems));
-
-        // Xoá vé khỏi cart
-        if (fromCart) u.getCart().removeIf(CartItem::isSelected);
+        paymentService.processPayment(u, ticketItems, snackItems); // ← use service
 
         mainFrame.refreshCartBadge();
         showSuccess(grand);
     }
 
     private double calcGrand() {
-        double t = ticketItems.stream().mapToDouble(i -> i.getSeat().computePrice()).sum();
-        double s = snackItems.stream().mapToDouble(SnackCartItem::getTotalPrice).sum();
-        return t + s;
+    return paymentService.calcTotal(ticketItems, snackItems);
     }
 
     private void showSuccess(double grand) {

@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import model.LanguageManager;
 import model.Film;
 import javax.swing.*;
 import java.awt.*;
