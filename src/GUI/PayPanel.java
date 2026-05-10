@@ -74,14 +74,17 @@ public class PayPanel extends JPanel {
 
         // Vé phim
         if (!ticketItems.isEmpty()) {
-            panel.add(sectionLabel("🎬  Vé phim"));
+            panel.add(sectionLabel(LanguageManager.t("pay.ticket") + " "));
             panel.add(Box.createVerticalStrut(6));
             for (CartItem i : ticketItems) {
                 panel.add(buildTicketRow(i));
                 panel.add(Box.createVerticalStrut(8));
                 ticketTotal += i.getSeat().computePrice();
             }
-            JLabel tl = new JLabel("Tổng vé: " + String.format("%,.0f VND", ticketTotal));
+            JLabel tl = new JLabel(
+                LanguageManager.t("pay.totalTicket") + " "
+                + String.format("%,.0f VND", ticketTotal)
+            );
             tl.setForeground(new Color(100, 220, 100));
             tl.setFont(new Font("Dialog", Font.BOLD, 13));
             panel.add(tl);
@@ -92,14 +95,17 @@ public class PayPanel extends JPanel {
         if (!snackItems.isEmpty()) {
             panel.add(separator());
             panel.add(Box.createVerticalStrut(10));
-            panel.add(sectionLabel("🍿  Bắp & Nước"));
+            panel.add(sectionLabel(LanguageManager.t("pay.snack")));
             panel.add(Box.createVerticalStrut(6));
             for (SnackCartItem si : snackItems) {
                 panel.add(buildSnackRow(si));
                 panel.add(Box.createVerticalStrut(6));
                 snackTotal += si.getTotalPrice();
             }
-            JLabel sl = new JLabel("Tổng bắp/nước: " + String.format("%,.0f VND", snackTotal));
+            JLabel sl = new JLabel(
+                LanguageManager.t("pay.total_snack")
+                + String.format("%,.0f VND", snackTotal)
+            );
             sl.setForeground(new Color(255, 200, 50));
             sl.setFont(new Font("Dialog", Font.BOLD, 13));
             panel.add(sl);
@@ -204,8 +210,9 @@ public class PayPanel extends JPanel {
 
         int confirm = JOptionPane.showConfirmDialog(
             mainFrame,
-            "Xác nhận thanh toán  " + String.format("%,.0f VND", grand) + "?",
-            "Xác nhận", JOptionPane.YES_NO_OPTION
+            LanguageManager.t("pay.confirm") + String.format("%,.0f VND", grand) + "?",
+            LanguageManager.t("pay.confirmTitle"),
+            JOptionPane.YES_NO_OPTION
         );
         if (confirm != JOptionPane.YES_OPTION) return;
 
@@ -251,17 +258,40 @@ public class PayPanel extends JPanel {
     }
 
     private void showSuccess(double grand) {
-        StringBuilder sb = new StringBuilder("✅  Đặt hàng thành công!\n\n");
+        StringBuilder sb = new StringBuilder(
+            "✅  " + LanguageManager.t("pay.success") + "\n\n"
+        );
         if (!ticketItems.isEmpty())
-            sb.append("🎬  Vé: ").append(ticketItems.size()).append(" vé\n");
+            sb.append("🎬  ")
+              .append(LanguageManager.t("pay.ticket") + " ")
+              .append(ticketItems.size())
+              .append("\n");
+
         if (!snackItems.isEmpty()) {
-            sb.append("🍿  Bắp/Nước:\n");
+            sb.append("🍿  ")
+              .append(LanguageManager.t("pay.snack") + " ")
+              .append("\n");
+
             for (SnackCartItem si : snackItems)
                 for (Item it : si.getItems())
-                    sb.append("  • ").append(it.getName()).append(" x").append(it.getQuantity()).append("\n");
+                    sb.append("  • ")
+                      .append(it.getName())
+                      .append(" x")
+                      .append(it.getQuantity())
+                      .append("\n");
         }
-        sb.append("\nTổng thanh toán: ").append(String.format("%,.0f VND", grand));
-        JOptionPane.showMessageDialog(mainFrame, sb.toString(), "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+        sb.append("\n")
+          .append(LanguageManager.t("pay.total"))
+          .append(String.format("%,.0f VND", grand));
+
+        JOptionPane.showMessageDialog(
+            mainFrame,
+            sb.toString(),
+            LanguageManager.t("pay.success"),
+            JOptionPane.INFORMATION_MESSAGE
+        );
+
         mainFrame.showHome();
     }
 

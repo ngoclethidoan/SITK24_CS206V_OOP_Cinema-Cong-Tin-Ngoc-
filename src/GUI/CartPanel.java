@@ -36,8 +36,8 @@ public class CartPanel extends JPanel {
 
     private void reloadText() { buildUI(); }
 
-    // ─────────────────────── TOP BAR ─────────────────────────────────
-    private JPanel createTopBar() {
+        // ─────────────────────── TOP BAR ─────────────────────────────────
+        private JPanel createTopBar() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBackground(new Color(19, 19, 19));
 
@@ -45,7 +45,7 @@ public class CartPanel extends JPanel {
         back.setFont(new Font("Dialog", Font.PLAIN, 13));
         back.addActionListener(e -> mainFrame.showHome());
 
-        JLabel title = new JLabel("🛒  Giỏ hàng");
+        JLabel title = new JLabel(LanguageManager.t(LanguageManager.BTN_CART));
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Dialog", Font.BOLD, 16));
 
@@ -57,14 +57,18 @@ public class CartPanel extends JPanel {
 
     // ─────────────────────── NOT LOGIN ───────────────────────────────
     private JPanel createNotLogin() {
+        
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(new Color(20, 20, 20));
+
         JLabel lbl = new JLabel(
             LanguageManager.t(LanguageManager.CART_NOT_LOGGED_IN),
             SwingConstants.CENTER
         );
+
         lbl.setForeground(Color.YELLOW);
         lbl.setFont(new Font("Dialog", Font.PLAIN, 16));
+
         p.add(lbl, BorderLayout.CENTER);
         return p;
     }
@@ -99,7 +103,7 @@ public class CartPanel extends JPanel {
 
         // ── Section: Vé phim ──────────────────────────────────────────
         if (!tickets.isEmpty()) {
-            listPanel.add(sectionHeader("🎬  Vé phim"));
+            listPanel.add(sectionHeader(LanguageManager.t(LanguageManager.USER_BOOKED)));
             for (CartItem item : tickets) {
                 listPanel.add(createTicketCard(item, tickets));
                 listPanel.add(Box.createRigidArea(new Dimension(0, 6)));
@@ -109,7 +113,7 @@ public class CartPanel extends JPanel {
 
         // ── Section: Bắp/Nước ────────────────────────────────────────
         if (!snacks.isEmpty()) {
-            listPanel.add(sectionHeader("🍿  Bắp & Nước"));
+            listPanel.add(sectionHeader(LanguageManager.t("cart.snack")));
             for (SnackCartItem si : snacks) {
                 listPanel.add(createSnackCard(si, snacks, user));
                 listPanel.add(Box.createRigidArea(new Dimension(0, 6)));
@@ -251,7 +255,11 @@ public class CartPanel extends JPanel {
         }
 
         JLabel totalLbl = new JLabel(
-            "Tổng: " + String.format("%,.0f", si.getTotalPrice()) + " VND"
+            LanguageManager.t(LanguageManager.SNACK_TOTAL)
+            + ": " 
+            + String.format("%,.0f", si.getTotalPrice())
+            + " " 
+            + LanguageManager.t(LanguageManager.CURRENCY)
         );
         totalLbl.setForeground(new Color(255, 215, 0));
         totalLbl.setFont(new Font("Dialog", Font.BOLD, 13));
@@ -310,8 +318,10 @@ public class CartPanel extends JPanel {
 
             if (selectedTickets.isEmpty() && selectedSnacks.isEmpty()) {
                 JOptionPane.showMessageDialog(
-                    mainFrame, "Chưa chọn món nào để thanh toán.",
-                    "Giỏ trống", JOptionPane.WARNING_MESSAGE
+                    mainFrame,
+                    LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN),
+                    LanguageManager.t(LanguageManager.MSG_ERROR),
+                    JOptionPane.WARNING_MESSAGE
                 );
                 return;
             }
@@ -343,9 +353,9 @@ public class CartPanel extends JPanel {
         String text = LanguageManager.t(LanguageManager.CART_TOTAL)
                 + ": " + String.format("%,.0f", grand) + " VND";
         if (snackTotal > 0 && ticketTotal > 0)
-            text += "  (vé + bắp/nước)";
+            text += "  " + LanguageManager.t(LanguageManager.CART_MIXED_TOTAL);
         else if (snackTotal > 0)
-            text += "  (chỉ bắp/nước)";
+            text += "  " + LanguageManager.t(LanguageManager.CART_SNACK_ONLY);
 
         totalLabel.setText(text);
     }

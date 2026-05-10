@@ -35,7 +35,9 @@ public class SnackPanel extends JPanel {
     // ─────────────────────────── BUILD UI ────────────────────────────
     private void buildUI() {
         // ── Title ──
-        JLabel title = new JLabel("🍿  Thêm bắp/nước (không bắt buộc)");
+        JLabel title = new JLabel("🍿  " 
+                        + LanguageManager.t("snack.title") + " "
+                        + LanguageManager.t("snack.optional"));
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Dialog", Font.BOLD, 14));
         add(title, BorderLayout.NORTH);
@@ -46,19 +48,19 @@ public class SnackPanel extends JPanel {
         listPanel.setBackground(getBackground());
 
         // Phân nhóm
-        listPanel.add(sectionLabel("🌽  Bắp rang"));
+        listPanel.add(sectionLabel("🌽  " + LanguageManager.t("snack.corn")));
         for (Item item : ItemDatabase.getAll()) {
             if (isCorn(item)) addRow(listPanel, item);
         }
 
         listPanel.add(Box.createRigidArea(new Dimension(0, 8)));
-        listPanel.add(sectionLabel("🥤  Nước uống"));
+        listPanel.add(sectionLabel("🥤  " + LanguageManager.t("snack.drink")));
         for (Item item : ItemDatabase.getAll()) {
             if (isBeverage(item)) addRow(listPanel, item);
         }
 
         listPanel.add(Box.createRigidArea(new Dimension(0, 8)));
-        listPanel.add(sectionLabel("🎁  Combo"));
+        listPanel.add(sectionLabel("🎁  " + LanguageManager.t("snack.combo")));
         for (Item item : ItemDatabase.getAll()) {
             if (isCombo(item)) addRow(listPanel, item);
         }
@@ -70,7 +72,9 @@ public class SnackPanel extends JPanel {
         add(sp, BorderLayout.CENTER);
 
         // ── Tổng tiền phía dưới ──
-        totalLabel = new JLabel("Tổng bắp/nước: 0 VND");
+        totalLabel = new JLabel(
+                LanguageManager.t("snack.total") + ": 0 " + LanguageManager.t(LanguageManager.CURRENCY)
+        );
         totalLabel.setForeground(new Color(255, 215, 0));
         totalLabel.setFont(new Font("Dialog", Font.BOLD, 13));
         totalLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
@@ -124,7 +128,11 @@ public class SnackPanel extends JPanel {
         double total = catalogItems.stream()
                 .mapToDouble(i -> i.getPrice() * i.getQuantity())
                 .sum();
-        totalLabel.setText("Tổng bắp/nước: " + String.format("%,.0f", total) + " VND");
+        totalLabel.setText(
+                LanguageManager.t("snack.total") + ": "
+                + String.format("%,.0f", total)
+                + " " + LanguageManager.t(LanguageManager.CURRENCY)
+        );
     }
 
     // ─────────────────────────── PUBLIC API ──────────────────────────

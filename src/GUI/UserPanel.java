@@ -156,107 +156,151 @@ public class UserPanel extends JPanel {
     /** Tạo card hiển thị 1 booking trong lịch sử (bao gồm bắp/nước nếu có) */
     private JPanel buildTicketCard(BookTicket ticket) {
 
-        // Card tổng
         JPanel card = new JPanel(new BorderLayout(0, 0));
         card.setBackground(new Color(30, 30, 30));
         card.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 999));
 
-        // ── Row trên: poster + thông tin vé ──
-        JPanel topRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
-        topRow.setBackground(new Color(30, 30, 30));
+        double seatPrice = 0;
 
-        // POSTER
-        JLabel poster = new JLabel();
-        poster.setPreferredSize(new Dimension(60, 85));
+        // =========================================================
+        // FILM SECTION
+        // Chỉ hiển thị nếu booking có film
+        // =========================================================
+        if (ticket.getFilm() != null) {
 
-        if (ticket.getFilm() != null && ticket.getFilm().getImagePath() != null) {
-            ImageIcon icon = new ImageIcon(ticket.getFilm().getImagePath());
-            if (icon.getIconWidth() > 0) {
-                Image img = icon.getImage().getScaledInstance(60, 85, Image.SCALE_SMOOTH);
-                poster.setIcon(new ImageIcon(img));
-            } else {
-                poster.setText("No Img");
-                poster.setForeground(Color.GRAY);
+            JPanel topRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+            topRow.setBackground(new Color(30, 30, 30));
+
+            // POSTER
+            JLabel poster = new JLabel();
+            poster.setPreferredSize(new Dimension(60, 85));
+
+            if (ticket.getFilm().getImagePath() != null) {
+                ImageIcon icon = new ImageIcon(ticket.getFilm().getImagePath());
+
+                if (icon.getIconWidth() > 0) {
+                    Image img = icon.getImage()
+                            .getScaledInstance(60, 85, Image.SCALE_SMOOTH);
+
+                    poster.setIcon(new ImageIcon(img));
+                }
             }
-        } else {
-            poster.setText("No Img");
-            poster.setForeground(Color.GRAY);
+
+            // INFO
+            JPanel info = new JPanel();
+            info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+            info.setBackground(new Color(30, 30, 30));
+
+            String filmName = ticket.getFilm().getTitle();
+            String seatCode = ticket.getSeat() != null
+                    ? ticket.getSeat().getCodeSeat()
+                    : "?";
+
+            String roomId = ticket.getRoom() != null
+                    ? ticket.getRoom().getRoomId()
+                    : "?";
+
+            seatPrice = ticket.getSeat() != null
+                    ? ticket.getSeat().computePrice()
+                    : 0;
+
+            JLabel filmLbl = new JLabel("🎬 " + filmName);
+            filmLbl.setForeground(Color.WHITE);
+            filmLbl.setFont(new Font("Dialog", Font.BOLD, 14));
+
+            JLabel seatLbl = new JLabel(
+                    "🎟 " + t(LanguageManager.CART_SEAT) + ": " + seatCode
+            );
+            seatLbl.setForeground(Color.LIGHT_GRAY);
+
+            JLabel roomLbl = new JLabel("🏢 Room: " + roomId);
+            roomLbl.setForeground(Color.LIGHT_GRAY);
+
+            JLabel priceLbl = new JLabel(
+                    String.format("%,.0f", seatPrice)
+                            + " "
+                            + t(LanguageManager.CURRENCY)
+            );
+            priceLbl.setForeground(Color.YELLOW);
+
+            info.add(filmLbl);
+            info.add(Box.createVerticalStrut(3));
+            info.add(seatLbl);
+            info.add(roomLbl);
+            info.add(priceLbl);
+
+            topRow.add(poster);
+            topRow.add(info);
+
+            card.add(topRow, BorderLayout.CENTER);
         }
 
-        // INFO VÉ
-        JPanel info = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        info.setBackground(new Color(30, 30, 30));
-
-        String filmName = ticket.getFilm() != null ? ticket.getFilm().getTitle() : "Unknown Film";
-        String seatCode = ticket.getSeat() != null ? ticket.getSeat().getCodeSeat() : "?";
-        String roomId   = ticket.getRoom() != null ? ticket.getRoom().getRoomId()   : "?";
-        double seatPrice = ticket.getSeat() != null ? ticket.getSeat().computePrice() : 0;
-
-        JLabel filmLbl  = new JLabel("🎬 " + filmName);
-        filmLbl.setForeground(Color.WHITE);
-        filmLbl.setFont(new Font("Dialog", Font.BOLD, 14));
-
-        JLabel seatLbl  = new JLabel("🎟 Ghế: " + seatCode);
-        seatLbl.setForeground(Color.LIGHT_GRAY);
-
-        JLabel roomLbl  = new JLabel("🏢 Phòng: " + roomId);
-        roomLbl.setForeground(Color.LIGHT_GRAY);
-
-        JLabel priceLbl = new JLabel("💰 Vé: " + String.format("%,.0f", seatPrice) + " VND");
-        priceLbl.setForeground(Color.YELLOW);
-
-        info.add(filmLbl);
-        info.add(Box.createVerticalStrut(3));
-        info.add(seatLbl);
-        info.add(roomLbl);
-        info.add(priceLbl);
-
-        topRow.add(poster);
-        topRow.add(info);
-
-        card.add(topRow, BorderLayout.CENTER);
-
-        // ── ⭐ Row dưới: bắp/nước (chỉ hiển thị nếu có) ──
+        // =========================================================
+        // SNACK SECTION
+        // =========================================================
         List<Item> snacks = ticket.getSnackItems();
+
         if (snacks != null && !snacks.isEmpty()) {
 
             JPanel snackSection = new JPanel();
             snackSection.setLayout(new BoxLayout(snackSection, BoxLayout.Y_AXIS));
             snackSection.setBackground(new Color(38, 30, 20));
+
             snackSection.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(70, 50, 20)),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)
+                    BorderFactory.createMatteBorder(
+                            1, 0, 0, 0,
+                            new Color(70, 50, 20)
+                    ),
+                    BorderFactory.createEmptyBorder(6, 8, 6, 8)
             ));
 
-            JLabel snackTitle = new JLabel("🍿  Bắp / Nước đi kèm:");
+            JLabel snackTitle = new JLabel(
+                    LanguageManager.t("cart.snack")
+            );
+
             snackTitle.setForeground(new Color(255, 200, 60));
             snackTitle.setFont(new Font("Dialog", Font.BOLD, 12));
+
             snackSection.add(snackTitle);
             snackSection.add(Box.createVerticalStrut(4));
 
             double snackTotal = 0;
+
             for (Item s : snacks) {
+
                 double lineTotal = s.getPrice() * s.getQuantity();
                 snackTotal += lineTotal;
 
                 JLabel snackLbl = new JLabel(
-                    "  • " + s.getName()
-                    + " x" + s.getQuantity()
-                    + "   " + String.format("%,.0f", lineTotal) + " VND"
+                        "  • "
+                                + s.getName()
+                                + " x"
+                                + s.getQuantity()
+                                + "   "
+                                + String.format("%,.0f", lineTotal)
+                                + " "
+                                + t(LanguageManager.CURRENCY)
                 );
+
                 snackLbl.setForeground(new Color(210, 180, 120));
                 snackSection.add(snackLbl);
             }
 
-            // Grand total
             double grandTotal = seatPrice + snackTotal;
+
             JLabel grandLbl = new JLabel(
-                "  Tổng cộng: " + String.format("%,.0f", grandTotal) + " VND"
+                    "  "
+                            + t(LanguageManager.CART_TOTAL)
+                            + ": "
+                            + String.format("%,.0f", grandTotal)
+                            + " "
+                            + t(LanguageManager.CURRENCY)
             );
+
             grandLbl.setForeground(new Color(255, 230, 80));
             grandLbl.setFont(new Font("Dialog", Font.BOLD, 13));
+
             snackSection.add(Box.createVerticalStrut(4));
             snackSection.add(grandLbl);
 

@@ -53,7 +53,7 @@ public class SeatPanel extends JPanel {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBackground(BG);
 
-        JButton back = new JButton("Back");
+        JButton back = new JButton(LanguageManager.t(LanguageManager.BTN_BACK));
         back.addActionListener(e -> mainFrame.showHome());
 
         JLabel title = new JLabel(film.getTitle() + " - " + room.getRoomId());
@@ -148,7 +148,7 @@ public class SeatPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(new Color(30, 30, 30));
 
-        lblSelected = new JLabel("No seat selected");
+        lblSelected = new JLabel(LanguageManager.t(LanguageManager.SEAT_NOT_SELECTED));
         lblSelected.setForeground(Color.LIGHT_GRAY);
 
         lblTotal = new JLabel(" ");
@@ -163,8 +163,13 @@ public class SeatPanel extends JPanel {
 
         p.add(info, BorderLayout.CENTER);
 
-        // ⭐ CHANGE TEXT BY MODE
-        actionBtn = new JButton(bookMode ? "BOOK NOW" : "ADD TO CART");
+        // CHANGE TEXT BY MODE
+        actionBtn = new JButton(
+                bookMode
+                        ? LanguageManager.t(LanguageManager.BTN_BOOK_NOW)
+                        : LanguageManager.t(LanguageManager.BTN_ADD_CART)
+        );
+
         actionBtn.setEnabled(false);
 
         actionBtn.addActionListener(e -> handleAction());
@@ -177,14 +182,16 @@ public class SeatPanel extends JPanel {
     private void refreshBottom() {
 
         if (selectedSeats.isEmpty()) {
-            lblSelected.setText("No seat selected");
+            lblSelected.setText(LanguageManager.t(LanguageManager.SEAT_NOT_SELECTED));
             lblTotal.setText(" ");
             actionBtn.setEnabled(false);
             return;
         }
 
         double total = 0;
-        StringBuilder sb = new StringBuilder("Selected: ");
+        StringBuilder sb = new StringBuilder(
+                LanguageManager.t(LanguageManager.SEAT_SELECTED) + ": "
+        );
 
         for (int i = 0; i < selectedSeats.size(); i++) {
             Seat s = selectedSeats.get(i);
@@ -196,7 +203,10 @@ public class SeatPanel extends JPanel {
         }
 
         lblSelected.setText(sb.toString());
-        lblTotal.setText("Total: " + total + " VND");
+
+        lblTotal.setText(
+                LanguageManager.t(LanguageManager.CART_TOTAL) + ": " + total + " VND"
+        );
 
         actionBtn.setEnabled(true);
     }

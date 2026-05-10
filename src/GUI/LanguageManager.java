@@ -124,6 +124,21 @@ public class LanguageManager {
     public static final String USER_BOOKED   = "USER_BOOKED";
     public static final String USER_REFUND   = "USER_REFUND";
     public static final String USER_HISTORY  = "USER_HISTORY";
+    
+    // Items
+    public static final String CART_MIXED_TOTAL = "cart.mixedTotal";
+    public static final String CART_SNACK_ONLY  = "cart.snackOnly";
+    
+    // Snack and Drink
+    public static final String SNACK_TITLE      = "snack.title";
+    public static final String SNACK_HINT       = "snack.hint";
+    public static final String SNACK_CORN       = "snack.corn";
+    public static final String SNACK_DRINK      = "snack.drink";
+    public static final String SNACK_TOTAL      = "snack.total";
+    public static final String SNACK_ADD_CART   = "snack.addToCart";
+    public static final String SNACK_EMPTY      = "snack.empty";
+    public static final String SNACK_SUCCESS    = "snack.success";
+    public static final String CURRENCY         = "currency";
 
     // ── Translation tables ────────────────────────────────────────────
     private static final Map<String, Map<Language, String>> table = new HashMap<>();
@@ -161,7 +176,16 @@ public class LanguageManager {
         define(SEAT_SELECTED,   "Selected seats","Ghế đã chọn", "選択された座席");
         define(FILM_SEAT_AVAILABLE, "Available", "Còn trống","空席");
         define(FILM_SEAT_UNAVAILABLE,"Booked","Đã đặt","予約済み");
-
+        
+        define("pay.ticket", "🎬 Movies", "🎬 Vé phim", "🎬 映画");
+        define("pay.snack", "🍿 Snacks", "🍿 Bắp & Nước", "🍿 スナック");
+        define("pay.totalTicket", "Ticket total: ", "Tổng vé: ", "チケット合計: ");
+        define("pay.total_snack", "Snack total: ", "Tổng bắp/nước: ", "スナック合計: ");
+        define("pay.confirm", "Confirm payment ", "Xác nhận thanh toán ", "支払い確認 ");
+        define("pay.confirmTitle", "Confirmation", "Xác nhận", "確認");
+        define("pay.success", "Booking successful!", "Đặt hàng thành công!", "予約成功！");
+        define("pay.total", "Total payment: ", "Tổng thanh toán: ", "合計支払い: ");
+        
         define(SETTINGS_TITLE,       "Settings",                   "Cài đặt",                    "設定");
         define(SETTINGS_LANGUAGE,    "🌐 Language",                "🌐 Ngôn ngữ",               "🌐 言語");
         define(SETTINGS_ACCOUNT,     "👤 Account",                 "👤 Tài khoản",              "👤 アカウント");
@@ -212,6 +236,22 @@ public class LanguageManager {
         define("user.booked.title", "Booked Tickets", "Vé đã đặt", "予約済みチケット");
         define("user.refund.title", "Refund Requests", "Yêu cầu hoàn tiền", "返金リクエスト");
         define("user.history.title", "Booking History", "Lịch sử đặt vé", "予約履歴");
+        
+        // Snack and Drink
+        define(CART_MIXED_TOTAL,     "(vé + bắp/nước)",  "(vé + bắp/nước)",    "(チケット + スナック)");
+        define(CART_SNACK_ONLY,"(chỉ bắp/nước)","(chỉ bắp・ドリンク)","(スナックのみ)");
+        define(SNACK_TITLE, "Snack Order", "Đặt bắp/nước", "スナック注文");
+        define(SNACK_HINT, "(click to increase quantity)", "(bấm để tăng số lượng)", "クリックで追加");
+        define(SNACK_CORN, "Popcorn", "Bắp rang", "ポップコーン");
+        define(SNACK_DRINK, "Drinks", "Nước uống", "ドリンク");
+        define(SNACK_TOTAL, "Total", "Tổng", "合計");
+        define(SNACK_ADD_CART, "Add to cart", "Thêm vào giỏ", "カートに追加");
+        define(SNACK_EMPTY, "No items selected", "Chưa chọn món", "未選択");
+        define(SNACK_SUCCESS, "Added to cart", "Thêm thành công", "追加完了");
+        define(CURRENCY, "VND", "VND", "円");
+        define("snack.combo", "Combo", "Combo", "コンボ");
+        define("snack.optional", "(optional)", "(không bắt buộc)", "(任意)");
+        define("cart.snack", "🍿 Snacks", "🍿 Bắp/Nước", "🍿 スナック");
     }
 
     private static void define(String key, String en, String vi, String jp) {
