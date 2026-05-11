@@ -8,127 +8,72 @@ public class FilmDatabase {
 
     private static List<Film> films = new ArrayList<>();
 
-    // ───────────────── INIT DATABASE ─────────────────
     public static void initDatabase() {
-
         films.clear();
-
         File file = new File("Data/films.csv");
-
-        if (!file.exists()) {
-            System.out.println("films.csv not found!");
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));) {
-
+        if (!file.exists()) { System.out.println("films.csv not found!"); return; }
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
             String line;
-
             while ((line = br.readLine()) != null) {
-
                 if (line.trim().isEmpty()) continue;
-
-                // safer split
                 String[] data = line.split("//", -1);
-
-                // EXPECT 14 FIELDS
-                if (data.length < 14) {
-                    System.out.println("Invalid row: " + line);
-                    continue;
-                }
-
-                String id = data[0].trim();
-
-                // ── TITLES ──
-                String titleEN = data[1].trim();
-                String titleVI = data[2].trim();
-                String titleJP = data[3].trim();
-
-                int duration;
-                double price;
-
+                if (data.length < 14) continue;
+                int duration; double price;
                 try {
                     duration = Integer.parseInt(data[4].trim());
-                    price = Double.parseDouble(data[5].trim());
-                } catch (Exception e) {
-                    System.out.println("Invalid number in row: " + line);
-                    continue;
-                }
-
-                String director = data[6].trim();
-                String cast = data[7].trim();
-
-                // ── SUMMARIES ──
-                String summaryEN = data[8].trim();
-                String summaryVI = data[9].trim();
-                String summaryJP = data[10].trim();
-
-                String imagePath = data[11].trim();
-                String roomId = data[12].trim();
-
+                    price    = Double.parseDouble(data[5].trim());
+                } catch (Exception e) { continue; }
                 Film.State state;
-                try {
-                    state = Film.State.valueOf(data[13].trim());
-                } catch (Exception e) {
-                    state = Film.State.ENDED; // fallback safety
-                }
-
-                // ── CREATE FILM ──
+                try { state = Film.State.valueOf(data[13].trim()); }
+                catch (Exception e) { state = Film.State.ENDED; }
                 Film film = new Film(
-                        id,
-                        titleEN,
-                        duration,
-                        price,
-                        director,
-                        cast,
-                        summaryEN,
-                        imagePath,
-                        roomId,
-                        state
+                    data[0].trim(), data[1].trim(), duration, price,
+                    data[6].trim(), data[7].trim(), data[8].trim(),
+                    data[11].trim(), data[12].trim(), state
                 );
-
-                // ── I18N FIELDS ──
-                film.setTitleVI(titleVI);
-                film.setTitleJP(titleJP);
-
-                film.setSummaryVI(summaryVI);
-                film.setSummaryJP(summaryJP);
-
+                film.setTitleVI(data[2].trim());   film.setTitleJP(data[3].trim());
+                film.setSummaryVI(data[9].trim()); film.setSummaryJP(data[10].trim());
                 films.add(film);
             }
-
-        } catch (Exception e) {
-            System.err.println("Film DB error: " + e.getMessage());
-        }
+        } catch (Exception e) { System.err.println("Film DB error: " + e.getMessage()); }
     }
 
-    // ───────────────── GET ALL FILMS ─────────────────
-    public static List<Film> getFilms() {
-        if (films.isEmpty()) initDatabase();
-        return films;
-    }
+    public static List<Film> getFilms()       { if (films.isEmpty()) initDatabase(); return films; }
+    public static List<Film> getUniqueFilms() { return getFilms(); }
 
-    // alias
-    public static List<Film> getUniqueFilms() {
-        return getFilms();
-    }
-
-    // ───────────────── FIND BY ID ─────────────────
     public static Film getById(String id) {
-        for (Film f : getFilms()) {
-            if (f.getCodeFilm().equals(id)) {
-                return f;
-            }
-        }
+        for (Film f : getFilms()) if (f.getCodeFilm().equals(id)) return f;
         return null;
     }
-    
     public static Film findByCode(String code) {
-        for (Film f : films) {
-            if (f.getCodeFilm().equalsIgnoreCase(code)) {
-                return f;
-            }
-        }
+        for (Film f : films) if (f.getCodeFilm().equalsIgnoreCase(code)) return f;
         return null;
     }
+
+    // ── ADMIN CRUD ──────────────────────────────────────────
+    public static void addFilm(Film film)          { films.add(film); }
+    public static void removeFilm(String codeFilm) {
+        films.removeIf(f -> f.getCodeFilm().equalsIgnoreCase(codeFilm));
+    }
+
+    public static void saveToCSV() {
+        File dir = new File("Data");
+        if (!dir.exists()) dir.mkdirs();
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream("Data/films.csv"), "UTF-8")))) {
+            for (Film f : films) {
+                pw.println(String.join("//",
+                    f.getCodeFilm(), f.getTitle(),
+                    nvl(f.getTitleVI()), nvl(f.getTitleJP()),
+                    String.valueOf(f.getDuration()), String.valueOf(f.getPrice()),
+                    nvl(f.getDirector()), nvl(f.getCast()),
+                    nvl(f.getSummary()), nvl(f.getSummaryVI()), nvl(f.getSummaryJP()),
+                    nvl(f.getImagePath()), nvl(f.getRoomId()), f.getState().name()
+                ));
+            }
+        } catch (IOException e) { System.err.println("FilmDatabase: cannot save – " + e.getMessage()); }
+    }
+
+    private static String nvl(String s) { return s != null ? s : ""; }
 }

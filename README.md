@@ -1,99 +1,109 @@
-# 🎬 Cinema Booking System
+# 🎬 CNT Cinema Booking System
 
-A simple **Cinema Booking System** that allows users to browse movies, view showtimes, and book seats.
-This project is designed to demonstrate core programming concepts such as **object-oriented programming, data structures, and system design**.
-
----
-
-## 📌 Features
-
-* 🎥 View available movies
-* 🕒 Check movie showtimes
-* 💺 Book cinema seats
-* ❌ Cancel bookings
-* 📋 Display booking information
-* 👤 Basic user management
+A **Cinema Booking System** built with Java (Swing GUI) for the OOP course project.  
+Demonstrates core OOP principles: Encapsulation, Inheritance, Polymorphism, Abstraction, and Interfaces.
 
 ---
 
-## 🛠️ Technologies Used
-
-* **Programming Language:** Java
-* **Concepts:** Object-Oriented Programming (OOP)
-* **Data Structures:** Arrays / ArrayList
-* **Development Tool:** NetBeans 
+## 👥 Authors
+- Cong Nguyen
+- Tin Nguyen  
+- Ngoc Le
 
 ---
 
-## 🧩 System Structure
+## 🚀 How to Run
 
-Example class structure:
+### Option 1 — Maven (recommended)
+```bash
+# 1. Clone the repo
+git clone <your-repo-url>
+cd SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-
 
-```
-CinemaBookingSystem
-│
-├── Movie.java
-├── ShowTime.java
-├── Seat.java
-├── Booking.java
-├── Customer.java
-└── Main.java
+# 2. Build
+mvn compile
+
+# 3. Run
+mvn exec:java -Dexec.mainClass="GUI.MainFrame"
+
+# Or build a runnable JAR then run it
+mvn package
+java -jar dist/CNTCinema.jar
 ```
 
-### Main Components
+### Option 2 — NetBeans
+Open the project folder in NetBeans and press **Run**.
 
-| Class    | Description              |
-| -------- | ------------------------ |
-| Movie    | Stores movie information |
-| ShowTime | Manages movie schedules  |
-| Seat     | Represents cinema seats  |
-| Booking  | Handles ticket booking   |
-| Customer | Stores user information  |
-| Main     | Runs the application     |
+> **Default admin account:** username `admin` / password `123`
 
 ---
 
-## 🚀 How to Run the Project
+## ✨ Features
 
-1. Clone this repository
-
-
-## 📸 Example Workflow
-
-1. User selects a movie
-2. User chooses showtime
-3. User selects available seats
-4. System confirms booking
-
----
-
-## 📚 Learning Purpose
-
-This project helps practice:
-
-* Object-Oriented Programming
-* Class design
-* Data handling
-* Basic system architecture
+| Feature | Description |
+|---------|-------------|
+| 🎥 Browse films | View all films with poster, info, summary |
+| 🔍 Search | Search films by title in real time |
+| 💺 Seat selection | Visual 2D seat map with colour-coded types |
+| 🛒 Cart | Add multiple seats to cart before paying |
+| 💳 Payment | Checkout tickets + snacks in one flow |
+| 🍿 Snack order | Order popcorn & drinks independently |
+| 👤 User account | Register, login, view booking history |
+| ⚙️ Settings | Change name, password, language (EN/VI/JP) |
+| 🛠 Admin panel | Add, delete, change state of films (admin only) |
 
 ---
 
-## 🔮 Future Improvements
+## 🧩 Package Structure
 
-* Add **GUI interface**
-* Integrate **database (MySQL / PostgreSQL)**
-* Online payment integration
-* Admin dashboard
-* Real-time seat availability
+```
+src/
+├── cinema/        Entry point (Cinema.java)
+├── GUI/           All Swing panels and frames
+│   ├── MainFrame, FilmPanel, SeatPanel, CartPanel
+│   ├── PayPanel, LoginFrame, RegisterFrame
+│   ├── AdminPanel, SettingPanel, UserPanel ...
+├── model/         Data classes
+│   ├── Seat (abstract) → StandardSeat, VIPSeat,
+│   │                      PremiumSeat, ReclineSeat, CoupleSeat
+│   ├── Item → Beverage, Corn
+│   ├── Film, Room, User, BookTicket, CartItem, SnackCartItem
+├── service/       Business logic layer
+│   ├── BookingService, PaymentService, UserService
+│   ├── FilmService, SeatService, ItemService
+├── interfaces/    Contracts for each service
+│   ├── IBookingService, IPaymentService, IUserService
+│   ├── IFilmService, ISeatService, IItemService
+├── database/      CSV / file-based persistence
+│   ├── FilmDatabase, UserDatabase, BookingDatabase
+│   ├── RoomDatabase, ItemDatabase
+└── exception/     Custom exceptions
+    ├── InvalidSeat, NoExistFilm
+```
 
 ---
 
-## 👨‍💻 Author
+## 🏗 OOP Concepts Applied
 
-**Cong Nguyen**
-**Tin Nguyen**
-**Ngoc Le**
+| Concept | Where |
+|---------|-------|
+| **Encapsulation** | Private fields + getters/setters in all model classes |
+| **Inheritance** | `Seat` → 5 seat types; `Item` → `Beverage`, `Corn` |
+| **Polymorphism** | `computePrice()` overridden per seat type |
+| **Abstract class** | `Seat` is abstract with abstract `computePrice()` |
+| **Interface** | 6 interfaces in `interfaces/` package |
+| **Static** | All `Database` classes use static fields & methods |
+| **File I/O** | `bookings.csv`, `users.dat`, `films.csv` |
+| **2D Array** | `Seat[][]` matrix inside each `Room` |
+| **Concurrency** | `synchronized(seat)` in `SeatService.select()` |
 
 ---
 
-⭐ If you find this project useful, feel free to **star the repository**!
+## 📁 Data Files
+
+| File | Contents |
+|------|----------|
+| `Data/films.csv` | Film catalogue (14 fields, `//` separated) |
+| `Data/bookings.csv` | Booking history (`\|` separated) |
+| `users.dat` | User accounts (`\|` separated) |
+| `Data/items.csv` | Snack/drink catalogue |

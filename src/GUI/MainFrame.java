@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
+import database.CartDatabase;
 
 import static model.LanguageManager.t;
 
@@ -42,9 +43,18 @@ public class MainFrame extends JFrame {
     }
 
     public void setLoggedIn(boolean value, User user) {
+        // ← Save cart before logging out
+        if (!value && this.currentUser != null) {
+            CartDatabase.save(this.currentUser);
+        }
         this.isLoggedIn      = value;
         this.currentUser     = value ? user : null;
         this.currentUsername = value ? user.getName() : "Guest";
+        
+        // ← Restore cart after logging in
+        if (value && user != null) {
+            CartDatabase.load(user);
+        }
         refreshUI();
     }
 
@@ -58,7 +68,11 @@ public class MainFrame extends JFrame {
         refreshUI();
         setVisible(true);
     }
-
+    public void showAdminPanel() {
+    if (currentUser == null || !currentUser.isAdmin()) return;
+    mainPanel.add(new AdminPanel(this), "ADMIN");
+    cardLayout.show(mainPanel, "ADMIN");
+}
     // ── Top bar ───────────────────────────────────────────────────────
     private JPanel createTopBar() {
         JPanel topBar = new JPanel(new BorderLayout());
@@ -91,29 +105,52 @@ public class MainFrame extends JFrame {
             loginBtn.addActionListener(e -> new LoginFrame(this));
             right.add(loginBtn);
         } else {
-            int cartCount = currentUser != null
-                ? currentUser.getCart().stream().mapToInt(CartItem::getQuantity).sum()
-                  + currentUser.getSnackCart().stream().mapToInt(SnackCartItem::getTotalQty).sum()
-                : 0;
-            String cartLabel = cartCount > 0
-                ? t(LanguageManager.BTN_CART) + " (" + cartCount + ")" : t(LanguageManager.BTN_CART);
+    if (currentUser != null && currentUser.isAdmin()) {
+        // ── ADMIN: only show Admin button ──────────────────
+        JButton adminPanelBtn = new JButton("🛠 Admin");
+        styleButton(adminPanelBtn, new Color(150, 50, 50));
+        adminPanelBtn.addActionListener(e -> showAdminPanel());
+        right.add(adminPanelBtn);
+        
+        JButton logoutBtn = new JButton("🚪 Logout");
+        styleButton(logoutBtn, new Color(100, 40, 40));
+        logoutBtn.addActionListener(e -> {
+        int confirm = JOptionPane.showConfirmDialog(
+            this, "Are you sure you want to log out?",
+            "Logout", JOptionPane.YES_NO_OPTION
+        );
+        if (confirm == JOptionPane.YES_OPTION) setLoggedIn(false, null);
+    });
+        
+        right.add(logoutBtn);
 
-            JButton cartBtn = new JButton(cartLabel);
-            styleButton(cartBtn, new Color(39, 120, 80));
-            cartBtn.addActionListener(e -> showCart());
+    } else {
+        // ── NORMAL USER: show cart, snack, profile ─────────
+        int cartCount = currentUser != null
+            ? currentUser.getCart().stream().mapToInt(CartItem::getQuantity).sum()
+              + currentUser.getSnackCart().stream().mapToInt(SnackCartItem::getTotalQty).sum()
+            : 0;
+        String cartLabel = cartCount > 0
+            ? t(LanguageManager.BTN_CART) + " (" + cartCount + ")"
+            : t(LanguageManager.BTN_CART);
 
-            JButton snackBtn = new JButton("🍿 Bắp & Nước");
-            styleButton(snackBtn, new Color(160, 110, 20));
-            snackBtn.addActionListener(e -> showSnackOrder());
+        JButton snackBtn = new JButton("🍿 Bắp & Nước");
+        styleButton(snackBtn, new Color(160, 110, 20));
+        snackBtn.addActionListener(e -> showSnackOrder());
 
-            JButton adminBtn = new JButton("👤 " + currentUsername);
-            styleButton(adminBtn, new Color(70, 70, 70));
-            adminBtn.addActionListener(e -> showUserPanel());
+        JButton cartBtn = new JButton(cartLabel);
+        styleButton(cartBtn, new Color(39, 120, 80));
+        cartBtn.addActionListener(e -> showCart());
 
-            right.add(snackBtn);
-            right.add(cartBtn);
-            right.add(adminBtn);
-        }
+        JButton profileBtn = new JButton("👤 " + currentUsername);
+        styleButton(profileBtn, new Color(70, 70, 70));
+        profileBtn.addActionListener(e -> showUserPanel());
+
+        right.add(snackBtn);
+        right.add(cartBtn);
+        right.add(profileBtn);
+    }
+}
 
         JButton settingsBtn = new JButton(t(LanguageManager.BTN_SETTINGS));
         styleButton(settingsBtn, new Color(40, 40, 40));
@@ -247,7 +284,7 @@ public class MainFrame extends JFrame {
     
     public boolean isLoggedIn()     { return isLoggedIn; }
     public User    getCurrentUser() { return currentUser; }
-
+    
     public static void main(String[] args) {
         // Cross-platform font: uu tien Segoe UI (Windows), fallback Dialog (macOS/Linux)
         // Dam bao hien thi tieng Viet dung tren ca hai OS
