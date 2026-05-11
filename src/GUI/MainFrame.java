@@ -124,7 +124,7 @@ public class MainFrame extends JFrame {
         
         right.add(logoutBtn);
 
-    } else {
+    } else if (currentUser != null && currentUser.isAdmin() == false){
         // ── NORMAL USER: show cart, snack, profile ─────────
         int cartCount = currentUser != null
             ? currentUser.getCart().stream().mapToInt(CartItem::getQuantity).sum()
