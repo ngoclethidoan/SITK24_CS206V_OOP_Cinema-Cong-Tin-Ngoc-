@@ -144,7 +144,7 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
                     LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN)
                 );
             } else {
-                parent.showSeatPanel(film, false);
+                parent.showSeatPanel(film, true);
             }
         });
 
@@ -160,6 +160,7 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
         return;
         }
         parent.showSeatPanel(film, true);
+        parent.showSnackOrder();
         });
 
         actionPanel.add(btnAddToCart);

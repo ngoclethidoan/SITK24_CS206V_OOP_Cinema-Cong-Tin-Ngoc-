@@ -181,8 +181,7 @@ public class SeatPanel extends JPanel {
         lblTotal.setText(LanguageManager.t(LanguageManager.CART_TOTAL) + ": " + total + " VND");
         actionBtn.setEnabled(true);
         snackBtn.setEnabled(true);
-        // Show snack button only in cart mode
-//        snackBtn.setVisible(!bookMode);
+        
     }
 
     // ── ACTION ───────────────────────────────────────────────────────
@@ -205,12 +204,12 @@ public class SeatPanel extends JPanel {
     }
 
     /** Add seats to cart then open snack panel */
-    private void handleAddToCartThenSnack() {
-        if (selectedSeats.isEmpty()) return;
-        addSeatsToCart();
-        mainFrame.refreshCartBadge();
-        mainFrame.showSnackOrder(); // ← open snack panel after adding seats
-    }
+//    private void handleAddToCartThenSnack() {
+//        if (selectedSeats.isEmpty()) return;
+//        addSeatsToCart();
+//        mainFrame.refreshCartBadge();
+//        mainFrame.showSnackOrder(); // ← open snack panel after adding seats
+//    }
 
     /** Marks seats as booked, adds to user cart, saves PENDING to bookings.csv */
     private void addSeatsToCart() {
