@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
-import database.CartDatabase;   
+  
 
 import static model.LanguageManager.t;
 

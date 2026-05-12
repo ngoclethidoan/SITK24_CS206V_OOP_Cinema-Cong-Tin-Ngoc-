@@ -2,6 +2,7 @@ package service;
 
 import database.FilmDatabase;
 import interfaces.IFilmService;
+import java.util.List;
 import model.*;
 
 public class FilmService implements IFilmService {
@@ -31,4 +32,14 @@ public class FilmService implements IFilmService {
         // Chỉ cho phép đặt vé hoặc thêm vào giỏ nếu trạng thái là NOW_SHOWING
         return film != null && film.getState() == Film.State.NOW_SHOWING;
     }
+    
+    public void updateFilm(Film updated) {
+    List<Film> films = FilmDatabase.getFilms();
+    for (int i = 0; i < films.size(); i++) {
+        if (films.get(i).getCodeFilm().equalsIgnoreCase(updated.getCodeFilm())) {
+            films.set(i, updated);
+            return;
+        }
+    }
+}
 }

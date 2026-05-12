@@ -106,4 +106,8 @@ public class UserDatabase {
     // Escape '|' and newlines in stored values
     private static String escape(String s)   { return s.replace("\\", "\\\\").replace("|", "\\|"); }
     private static String unescape(String s) { return s.replace("\\|", "|").replace("\\\\", "\\"); }
+    
+    public static void removeUser(String userId) {
+    users.removeIf(u -> u.getUserId().equalsIgnoreCase(userId));
+}
 }
