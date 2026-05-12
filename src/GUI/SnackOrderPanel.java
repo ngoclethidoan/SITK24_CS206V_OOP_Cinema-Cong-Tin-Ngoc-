@@ -9,12 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * SnackOrderPanel
- * Modes:
- *  - CART mode   (pendingTickets == null): seats already in cart → add snacks → showCart()
- *  - BOOKING mode (pendingTickets != null): seats reserved       → add snacks → showPay()
- */
+
 public class SnackOrderPanel extends JPanel {
 
     private static final Color BG      = new Color(20, 20, 20);
@@ -28,7 +23,8 @@ public class SnackOrderPanel extends JPanel {
     private final List<ItemEntry> bevEntries  = new ArrayList<>();
     private JLabel totalLabel;
 
-    /** Cart mode */
+    /** Cart mode
+     * @param mainFrame */
     public SnackOrderPanel(MainFrame mainFrame) { this(mainFrame, null); }
 
     /** Booking mode */

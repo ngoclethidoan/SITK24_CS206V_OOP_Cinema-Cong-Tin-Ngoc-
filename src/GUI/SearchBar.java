@@ -5,7 +5,6 @@ import database.FilmDatabase;
 import model.Film;
 
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -26,7 +25,6 @@ public class SearchBar extends JPanel {
     private static final Color DROP_BORDER   = new Color(70, 70, 90);
     private static final Color SUBTITLE_CLR  = new Color(150, 150, 150);
 
-    // ── Font an toàn cho cả Windows và macOS (hỗ trợ tiếng Việt) ─────
     private static Font safeFont(String name, int style, int size) {
         Font f = new Font(name, style, size);
         if (f.getFamily().equalsIgnoreCase(name)) return f;
@@ -247,10 +245,7 @@ public class SearchBar extends JPanel {
         buildDropdown();
     }
 
-    /**
-     * Tìm kiếm bỏ qua các ký tự đặc biệt – chỉ so sánh các "word" (chữ và số).
-     * Ví dụ: "avengers: endgame" tìm bằng "avengers endgame" vẫn ra.
-     */
+   
     private List<Film> searchFilms(String rawQuery) {
         // Chuẩn hoá: xóa ký tự không phải chữ/số/khoảng trắng, lower
         String normalized = rawQuery.toLowerCase().replaceAll("[^\\p{L}\\p{N}\\s]", " ").trim();

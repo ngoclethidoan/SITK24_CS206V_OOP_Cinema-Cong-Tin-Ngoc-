@@ -25,4 +25,10 @@ public class FilmService implements IFilmService {
     public void saveFilms() {
         FilmDatabase.saveToCSV();
     }
+    
+    @Override
+    public boolean isBookable(Film film) {
+        // Chỉ cho phép đặt vé hoặc thêm vào giỏ nếu trạng thái là NOW_SHOWING
+        return film != null && film.getState() == Film.State.NOW_SHOWING;
+    }
 }

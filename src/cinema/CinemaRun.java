@@ -10,8 +10,7 @@ import javax.swing.SwingUtilities;
 
 class CinemaRun {
     public static void main(String[] args) {
-        // Cross-platform font: uu tien Segoe UI (Windows), fallback Dialog (macOS/Linux)
-        // Dam bao hien thi tieng Viet dung tren ca hai OS
+        
         String fontName = "Dialog";
         java.awt.Font[] allFonts = java.awt.GraphicsEnvironment
             .getLocalGraphicsEnvironment().getAllFonts();
@@ -37,5 +36,5 @@ class CinemaRun {
         VoucherDatabase.init(); 
         BookingDatabase.restoreBookedSeats();
         SwingUtilities.invokeLater(MainFrame::new);
-    }
+    }   
 }

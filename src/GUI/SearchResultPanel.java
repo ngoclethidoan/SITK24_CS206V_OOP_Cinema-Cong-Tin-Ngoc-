@@ -11,10 +11,8 @@ import java.awt.*;
 import java.io.File;
 import java.util.List;
 
-/**
- * SearchResultPanel – hiển thị lưới phim kết quả tìm kiếm,
- * tương tự HOME nhưng chỉ show các film khớp query.
- */
+
+
 public class SearchResultPanel extends JPanel {
 
     public SearchResultPanel(List<Film> results, String query, MainFrame mainFrame) {

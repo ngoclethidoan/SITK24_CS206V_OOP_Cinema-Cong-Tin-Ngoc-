@@ -3,18 +3,11 @@ package GUI;
 import model.LanguageManager;
 import database.UserDatabase;
 import model.User;
-
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import static model.LanguageManager.t;
 
-/**
- * SettingPanel – extends JPanel (nhúng vào CardLayout của MainFrame). 3 tab:
- * Language | Account | Security
- */
 public class SettingPanel extends JPanel {
 
     // ── Design tokens ─────────────────────────────────────────────────
@@ -620,10 +613,12 @@ public class SettingPanel extends JPanel {
         f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         f.setAlignmentX(LEFT_ALIGNMENT);
         f.addFocusListener(new FocusAdapter() {
+            @Override
             public void focusGained(FocusEvent e) {
                 f.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ACCENT, 1), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             }
 
+            @Override
             public void focusLost(FocusEvent e) {
                 f.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(FIELD_BDR, 1), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             }

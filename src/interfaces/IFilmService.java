@@ -7,4 +7,5 @@ public interface IFilmService {
     void addFilm(Film film);
     void removeFilm(String codeFilm);
     void saveFilms();
+    boolean isBookable(Film film);
 }

@@ -18,13 +18,11 @@ public class ItemPanel extends JPanel {
 
     public ItemPanel() {
 
-        setLayout(new GridLayout(0, 1)); // Hiển thị theo hàng dọc
+        setLayout(new GridLayout(0, 1)); 
 
         availableItems = new ArrayList<>();
 
-        
 
-        // Dữ liệu mẫu (sau này bạn có thể đọc từ file giống films.csv)
 
         availableItems.add(new Item("COMBO1", "Combo Bắp Rang + Pepsi", 75000, 0));
 
@@ -42,7 +40,7 @@ public class ItemPanel extends JPanel {
 
             
 
-            // Cập nhật số lượng khi người dùng thay đổi giá trị spinner
+ 
 
             spinner.addChangeListener(e -> item.setQuantity((int) spinner.getValue()));
 

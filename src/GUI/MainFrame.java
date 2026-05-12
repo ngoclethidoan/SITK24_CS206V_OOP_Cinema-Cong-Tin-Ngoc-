@@ -26,7 +26,6 @@ public class MainFrame extends JFrame {
     private static final String USER = "USER";
 
     public void refreshUI() {
-        // Luôn đồng bộ currentUsername với currentUser.getName() mới nhất
         if (currentUser != null) currentUsername = currentUser.getName();
         setTitle("CNTcinema - " + currentUsername);
         getContentPane().removeAll();
@@ -267,22 +266,20 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "PAY");
     }
 
-    /** Mở Settings dưới d
-     * ạng Panel trong CardLayout */
+//=============SETTINGS======================
     public void showSettings() {
         mainPanel.add(new SettingPanel(this), "SETTINGS");
         cardLayout.show(mainPanel, "SETTINGS");
     }
 
-    /** Hiển thị kết quả tìm kiếm (Enter hoặc click 🔍) */
+//=============SEARCH RESULT======================
     public void showSearchResults(java.util.List<Film> results, String query) {
         mainPanel.add(new SearchResultPanel(results, query, this), "SEARCH");
         cardLayout.show(mainPanel, "SEARCH");
     }
 
-    /** Cập nhật cart badge trên TopBar mà không reload toàn bộ UI */
-    public void refreshCartBadge() {
-        // Only rebuild the top bar, keep current panel visible
+
+    public void refreshCartBadge() {   
         getContentPane().removeAll();
         add(createTopBar(), BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);

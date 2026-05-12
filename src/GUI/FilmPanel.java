@@ -50,11 +50,11 @@ public class FilmPanel extends JPanel {
         default         -> film.getTitle();
 };
         // FilmPanel.java — also localize the summary:
-String summary = switch (LanguageManager.getInstance().getCurrent()) {
-    case VIETNAMESE -> film.getSummaryVI();  // ← now works
-    case JAPANESE   -> film.getSummaryJP();  // ← now works
-    default         -> film.getSummary();
-};
+        String summary = switch (LanguageManager.getInstance().getCurrent()) {
+            case VIETNAMESE -> film.getSummaryVI();  // ← now works
+            case JAPANESE   -> film.getSummaryJP();  // ← now works
+            default         -> film.getSummary();
+        };
 
 
 
@@ -76,7 +76,38 @@ String summary = switch (LanguageManager.getInstance().getCurrent()) {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
         centerPanel.setBackground(new Color(19, 19, 19));
+        
+        /// FilmPanel.java -> buildUI()
+        // Khởi tạo FilmService để dùng check logic 
+        service.FilmService filmService = new service.FilmService(); 
 
+        // 1. Kiểm tra phim có đặt được không
+        boolean canBook = filmService.isBookable(film); 
+
+        // 2. Nếu không đặt được, hiện dòng chữ thông báo trạng thái
+        if (!canBook) {
+            String msg = (film.getState() == Film.State.COMING_SOON) ? "📅 SẮP CÔNG CHIẾU" : "🚫 ĐÃ DỪNG CHIẾU";
+            JLabel statusNotify = new JLabel(msg);
+            statusNotify.setForeground(film.getState() == Film.State.COMING_SOON ? Color.ORANGE : Color.GRAY);
+            statusNotify.setFont(new Font("Dialog", Font.BOLD, 18));
+            statusNotify.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            centerPanel.add(statusNotify); // Thêm vào màn hình chi tiết [cite: 489]
+            centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        }
+        
+        //Film's state Label
+        JLabel lblStatusNotify = new JLabel();
+        lblStatusNotify.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblStatusNotify.setFont(new Font("Dialog", Font.BOLD, 14));
+        if (film.getState() == Film.State.COMING_SOON) {
+            lblStatusNotify.setText("📅 SẮP CÔNG CHIẾU");
+            lblStatusNotify.setForeground(new Color(230, 126, 34)); // Màu cam
+        } else if (film.getState() == Film.State.ENDED) {
+            lblStatusNotify.setText("🚫 ĐÃ DỪNG CHIẾU");
+            lblStatusNotify.setForeground(Color.GRAY);
+        }
+        
         // Poster
         ImageIcon icon = new ImageIcon(film.getImagePath());
         if (icon.getIconWidth() > 0) {
@@ -101,8 +132,8 @@ String summary = switch (LanguageManager.getInstance().getCurrent()) {
         // INFO (i18n)
         JLabel lblInfo = new JLabel();
         centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DIRECTOR) + ": " + film.getDirector()));
-centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_CAST) + ": " + film.getCast().replace('|', ',')));
-centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": " + film.getDuration() + " mins"));
+        centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_CAST) + ": " + film.getCast().replace('|', ',')));
+        centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": " + film.getDuration() + " mins"));
 
         lblInfo.setFont(new Font("Dialog", Font.PLAIN, 16));
         lblInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -136,7 +167,12 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
             LanguageManager.t(LanguageManager.BTN_ADD_CART)
         );
         styleButton(btnAddToCart, new Color(52, 152, 219));
-
+        
+        if (!canBook) {
+        btnAddToCart.setEnabled(false);
+        btnAddToCart.setBackground(new Color(70, 70, 70)); // Ghi đè màu xanh bằng màu xám
+        }
+        
         btnAddToCart.addActionListener(e -> {
             if (!parent.isLoggedIn()) {
                 JOptionPane.showMessageDialog(
@@ -153,6 +189,11 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
             LanguageManager.t(LanguageManager.BTN_BOOK_NOW)
         );
         styleButton(btnBookNow, new Color(46, 204, 113));
+        
+        if (!canBook) {
+        btnBookNow.setEnabled(false);
+        btnBookNow.setBackground(new Color(70, 70, 70)); // Ghi đè màu xanh lá bằng màu xám
+        }
 
         btnBookNow.addActionListener(e -> {
         if (!parent.isLoggedIn()) {
@@ -160,17 +201,20 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
         return;
         }
         parent.showSeatPanel(film, true);
-//        parent.showSnackOrder();
+
         });
 
-        actionPanel.add(btnAddToCart);
-        actionPanel.add(btnBookNow);
+        
 
         // ADD TO PANEL
+        actionPanel.add(btnAddToCart);
+        actionPanel.add(btnBookNow);
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(actionPanel, BorderLayout.SOUTH);
         
+        
+
         
     }
 
