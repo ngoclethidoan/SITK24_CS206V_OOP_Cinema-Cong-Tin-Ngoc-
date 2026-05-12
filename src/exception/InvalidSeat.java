@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// exception/InvalidSeat.java
 package exception;
-
-/**
- *
- * @author Administrator
- */
-public class InvalidSeat {
-    
+public class InvalidSeat extends Exception {
+    public InvalidSeat(String seatCode) {
+        super("Seat " + seatCode + " is not available or does not exist.");
+    }
 }

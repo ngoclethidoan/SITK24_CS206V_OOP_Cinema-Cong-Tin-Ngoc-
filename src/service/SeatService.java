@@ -1,17 +1,17 @@
+// SeatService.java
 package service;
 
+import exception.SeatAlreadyBookedException;
 import interfaces.ISeatService;
 import model.*;
 
 public class SeatService implements ISeatService {
 
     @Override
-    public void select(Seat seat) {
+    public void select(Seat seat) throws SeatAlreadyBookedException {
         synchronized (seat) {
             if (!seat.isAvailable()) {
-                throw new IllegalStateException(
-                    "Seat " + seat.getCodeSeat() + " is not available"
-                );
+                throw new SeatAlreadyBookedException(seat.getCodeSeat()); // ← custom exception
             }
             seat.setState(Seat.State.booked);
         }

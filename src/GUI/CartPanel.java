@@ -174,7 +174,7 @@ public class CartPanel extends JPanel {
 
             cart.remove(item);
             rebuildList(user);
-            mainFrame.refreshCartBadge();
+//            mainFrame.refreshCartBadge();
         });
 
         card.add(left,   BorderLayout.WEST);
@@ -229,7 +229,7 @@ public class CartPanel extends JPanel {
         del.addActionListener(e -> {
             snackList.remove(si);
             rebuildList(user);
-            mainFrame.refreshCartBadge();
+//            mainFrame.refreshCartBadge(); 
         });
 
         card.add(left,   BorderLayout.WEST);
@@ -258,16 +258,19 @@ public class CartPanel extends JPanel {
         pay.setCursor(new Cursor(Cursor.HAND_CURSOR));
         pay.addActionListener(e -> {
             User u = mainFrame.getCurrentUser();
-            List<CartItem>      selectedTickets = u.getCart().stream().filter(CartItem::isSelected).toList();
-            List<SnackCartItem> selectedSnacks  = u.getSnackCart().stream().filter(SnackCartItem::isSelected).toList();
-            if (selectedTickets.isEmpty() && selectedSnacks.isEmpty()) {
-                JOptionPane.showMessageDialog(mainFrame,
-                    LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN),
-                    LanguageManager.t(LanguageManager.MSG_ERROR),
-                    JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            mainFrame.showPay(selectedTickets, selectedSnacks, true);
+    List<CartItem>      selectedTickets = u.getCart().stream()
+        .filter(CartItem::isSelected).toList();
+    List<SnackCartItem> selectedSnacks  = u.getSnackCart().stream()
+        .filter(SnackCartItem::isSelected).toList();
+
+    if (selectedTickets.isEmpty() && selectedSnacks.isEmpty()) {
+        JOptionPane.showMessageDialog(mainFrame,
+            "Please check at least one item to pay.",  // ← correct message
+            "Nothing Selected",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    mainFrame.showPay(selectedTickets, selectedSnacks, true);
         });
 
         p.add(totalLabel, BorderLayout.WEST);

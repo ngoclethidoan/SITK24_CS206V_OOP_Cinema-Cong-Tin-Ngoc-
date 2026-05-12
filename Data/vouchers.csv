@@ -1,0 +1,6 @@
+voucherID|name|percentOff|minOrderAmount|active
+WELCOME10|Welcome 10% Off|10|0|true
+SUMMER20|Summer Sale 20%|20|200000|true
+VIP30|VIP Member 30%|30|300000|true
+FLASH50|Flash Sale 50%|50|500000|true
+STUDENT15|Student Discount 15%|15|100000|true

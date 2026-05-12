@@ -2,43 +2,56 @@ package database;
 
 import model.*;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
  * BookingDatabase – saves/loads bookings to Data/bookings.csv
- *
- * Format: userID|filmID|roomID|seatID|itemIDs|STATUS
- * STATUS = PAID  (completed booking)
- *        = PENDING (in user's cart, not yet paid)
- * Old rows with 5 cols (no STATUS) are treated as PAID.
+ * Format: userID|filmID|roomID|seatID|itemIDs|STATUS|bookingId
  */
 public class BookingDatabase {
 
     private static final String CSV_FILE   = "Data/bookings.csv";
-    private static final String CSV_HEADER = "userID|filmID|roomID|seatID|itemIDs|STATUS";
+    private static final String CSV_HEADER = "userID|filmID|roomID|seatID|itemIDs|STATUS|bookingId";
 
     private static final String COL_SEP  = "|";
     private static final String ITEM_SEP = ";";
     private static final String QTY_SEP  = ":";
 
-    public static final int COL_USER   = 0;
-    public static final int COL_FILM   = 1;
-    public static final int COL_ROOM   = 2;
-    public static final int COL_SEAT   = 3;
-    public static final int COL_ITEMS  = 4;
-    public static final int COL_STATUS = 5;
+    public static final int COL_USER      = 0;
+    public static final int COL_FILM      = 1;
+    public static final int COL_ROOM      = 2;
+    public static final int COL_SEAT      = 3;
+    public static final int COL_ITEMS     = 4;
+    public static final int COL_STATUS    = 5;
+    public static final int COL_BOOK_ID   = 6;
 
     public static final String STATUS_PAID    = "PAID";
     public static final String STATUS_PENDING = "PENDING";
 
+    // ── BOOKING ID ───────────────────────────────────────────────────
+    public static String generateBookingId(String userId) {
+        String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return "BK-" + userId.toUpperCase() + "-" + ts;
+    }
+
+    public static String getBookingId(String[] row) {
+        if (row.length > COL_BOOK_ID && !row[COL_BOOK_ID].isBlank())
+            return row[COL_BOOK_ID];
+        // Fallback for old rows without bookingId
+        return "BK-" + row[COL_USER] + "-" + row[COL_FILM] + "-" + row[COL_SEAT];
+    }
+
     // ── SAVE COMPLETED BOOKING ───────────────────────────────────────
     public static void save(String userId, BookTicket ticket, List<Item> items) {
         ensureFileExists();
-        String filmId  = (ticket.getFilm() != null) ? ticket.getFilm().getCodeFilm() : "SNACK_ONLY";
-        String roomId  = (ticket.getRoom() != null) ? ticket.getRoom().getRoomId()   : "-";
-        String seatId  = (ticket.getSeat() != null) ? ticket.getSeat().getCodeSeat() : "-";
-        String itemIds = encodeItems(items);
-        String row = String.join(COL_SEP, userId, filmId, roomId, seatId, itemIds, STATUS_PAID);
+        String filmId    = ticket.getFilm() != null ? ticket.getFilm().getCodeFilm() : "SNACK_ONLY";
+        String roomId    = ticket.getRoom() != null ? ticket.getRoom().getRoomId()   : "-";
+        String seatId    = ticket.getSeat() != null ? ticket.getSeat().getCodeSeat() : "-";
+        String itemIds   = encodeItems(items);
+        String bookingId = generateBookingId(userId);
+        String row = String.join(COL_SEP, userId, filmId, roomId, seatId, itemIds, STATUS_PAID, bookingId);
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(CSV_FILE, true)))) {
             pw.println(row);
         } catch (IOException e) {
@@ -46,22 +59,18 @@ public class BookingDatabase {
         }
     }
 
-    public static void saveAll(String userId, List<BookTicket> tickets) {
-        for (BookTicket t : tickets) save(userId, t, null);
-    }
-
     public static void saveAll(String userId, List<BookTicket> tickets, List<Item> items) {
         for (int i = 0; i < tickets.size(); i++)
             save(userId, tickets.get(i), i == 0 ? items : null);
     }
 
-    // ── SAVE PENDING CART ITEM (ticket) ──────────────────────────────
+    // ── SAVE PENDING TICKET ──────────────────────────────────────────
     public static void savePendingTicket(String userId, Film film, Room room, Seat seat) {
         ensureFileExists();
         String filmId = film != null ? film.getCodeFilm() : "-";
         String roomId = room != null ? room.getRoomId()   : "-";
         String seatId = seat != null ? seat.getCodeSeat() : "-";
-        String row = String.join(COL_SEP, userId, filmId, roomId, seatId, "", STATUS_PENDING);
+        String row = String.join(COL_SEP, userId, filmId, roomId, seatId, "", STATUS_PENDING, "");
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(CSV_FILE, true)))) {
             pw.println(row);
         } catch (IOException e) {
@@ -69,30 +78,28 @@ public class BookingDatabase {
         }
     }
 
-    // ── SAVE PENDING SNACK CART ITEM ─────────────────────────────────
+    // ── SAVE PENDING SNACK ───────────────────────────────────────────
     public static void savePendingSnack(String userId, List<Item> items) {
         ensureFileExists();
         String itemIds = encodeItems(items);
         if (itemIds.isEmpty()) return;
-        String row = String.join(COL_SEP, userId, "SNACK_ONLY", "-", "-", itemIds, STATUS_PENDING);
+        String row = String.join(COL_SEP, userId, "SNACK_ONLY", "-", "-", itemIds, STATUS_PENDING, "");
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(CSV_FILE, true)))) {
             pw.println(row);
         } catch (IOException e) {
-            System.err.println("BookingDatabase: pending snack write error – " + e.getMessage());
+            System.err.println("BookingDatabase: pending snack error – " + e.getMessage());
         }
     }
 
-    // ── REMOVE ALL PENDING FOR A USER ────────────────────────────────
+    // ── REMOVE PENDING ───────────────────────────────────────────────
     public static void removePending(String userId) {
         rewriteWithout(userId, STATUS_PENDING, null, null);
     }
 
-    // ── REMOVE ONE SPECIFIC PENDING TICKET ───────────────────────────
     public static void removePendingTicket(String userId, String filmId, String seatId) {
         rewriteWithout(userId, STATUS_PENDING, filmId, seatId);
     }
 
-    /** Rewrite CSV removing rows that match userId + status + (optionally filmId + seatId). */
     private static void rewriteWithout(String userId, String status, String filmId, String seatId) {
         List<String[]> all = readAll();
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(
@@ -112,11 +119,7 @@ public class BookingDatabase {
         }
     }
 
-    // ── LOAD PENDING CART INTO USER ──────────────────────────────────
-    /**
-     * Reads PENDING rows for the user and populates their cart.
-     * Call this right after login.
-     */
+    // ── LOAD PENDING CART ────────────────────────────────────────────
     public static void loadPendingCart(User user) {
         if (user == null) return;
         user.getCart().clear();
@@ -136,29 +139,22 @@ public class BookingDatabase {
                 Seat seat = resolveSeat(row);
                 if (film != null && room != null && seat != null) {
                     user.getCart().add(new CartItem(film, room, seat));
-                    seat.setState(Seat.State.booked); // re-reserve in memory
+                    seat.setState(Seat.State.booked);
                 }
             }
         }
     }
 
     // ── RESTORE BOOKED SEATS ON STARTUP ─────────────────────────────
-    /**
-     * Marks all seats from PAID and PENDING bookings as booked in RoomDatabase.
-     * Call once after RoomDatabase.init() in main().
-     */
     public static void restoreBookedSeats() {
         for (String[] row : readAll()) {
             if ("-".equals(row[COL_SEAT]) || "SNACK_ONLY".equals(row[COL_FILM])) continue;
-            Room room = resolveRoom(row);
             Seat seat = resolveSeat(row);
-            if (room != null && seat != null) {
-                seat.setState(Seat.State.booked);
-            }
+            if (seat != null) seat.setState(Seat.State.booked);
         }
     }
 
-    // ── READ ALL ────────────────────────────────────────────────────
+    // ── READ ─────────────────────────────────────────────────────────
     public static List<String[]> readAll() {
         List<String[]> rows = new ArrayList<>();
         File f = new File(CSV_FILE);
@@ -188,24 +184,17 @@ public class BookingDatabase {
         return result;
     }
 
-    public static List<String[]> getByFilm(String filmId) {
-        List<String[]> result = new ArrayList<>();
-        for (String[] row : readAll())
-            if (row[COL_FILM].equalsIgnoreCase(filmId)) result.add(row);
-        return result;
-    }
-
-    // ── RESOLVE ─────────────────────────────────────────────────────
+    // ── RESOLVE ──────────────────────────────────────────────────────
     public static Film resolveFilm(String[] row) { return FilmDatabase.getById(row[COL_FILM]); }
     public static Room resolveRoom(String[] row) { return RoomDatabase.getRoom(row[COL_ROOM]); }
 
     public static Seat resolveSeat(String[] row) {
         Room room = resolveRoom(row);
         if (room == null) return null;
-        String seatCode = row[COL_SEAT];
+        String code = row[COL_SEAT];
         for (Seat[] seatRow : room.getSeats())
             for (Seat seat : seatRow)
-                if (seat != null && seat.getCodeSeat().equalsIgnoreCase(seatCode)) return seat;
+                if (seat != null && seat.getCodeSeat().equalsIgnoreCase(code)) return seat;
         return null;
     }
 
@@ -223,7 +212,7 @@ public class BookingDatabase {
         return entries;
     }
 
-    // ── TOTAL ───────────────────────────────────────────────────────
+    // ── TOTAL ────────────────────────────────────────────────────────
     public static double totalPrice(String[] row) {
         double total = 0;
         Seat seat = resolveSeat(row);
@@ -232,13 +221,7 @@ public class BookingDatabase {
         return total;
     }
 
-    public static double totalPriceByUser(String userId) {
-        double total = 0;
-        for (String[] row : getByUser(userId)) total += totalPrice(row);
-        return total;
-    }
-
-    // ── HELPERS ─────────────────────────────────────────────────────
+    // ── HELPERS ──────────────────────────────────────────────────────
     private static String encodeItems(List<Item> items) {
         if (items == null || items.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
@@ -250,14 +233,13 @@ public class BookingDatabase {
     }
 
     private static void ensureFileExists() {
-        File dir = new File("Data");
-        if (!dir.exists()) dir.mkdirs();
+        new File("Data").mkdirs();
         File f = new File(CSV_FILE);
         if (!f.exists()) {
             try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
                 pw.println(CSV_HEADER);
             } catch (IOException e) {
-                System.err.println("BookingDatabase: cannot create file – " + e.getMessage());
+                System.err.println("BookingDatabase: cannot create – " + e.getMessage());
             }
         }
     }

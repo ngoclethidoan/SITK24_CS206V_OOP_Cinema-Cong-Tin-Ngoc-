@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
-import database.CartDatabase;
+import database.CartDatabase;   
 
 import static model.LanguageManager.t;
 
@@ -43,17 +43,23 @@ public class MainFrame extends JFrame {
     }
 
     public void setLoggedIn(boolean value, User user) {
-        // ← Save cart before logging out
-        if (!value && this.currentUser != null) {
-            CartDatabase.save(this.currentUser);
-        }
         this.isLoggedIn      = value;
         this.currentUser     = value ? user : null;
         this.currentUsername = value ? user.getName() : "Guest";
-        
-        // ← Restore cart after logging in
+
         if (value && user != null) {
-            CartDatabase.load(user);
+            BookingDatabase.loadPendingCart(user);
+            user.getBookingHistory().clear();
+            for (String[] row : BookingDatabase.getByUser(user.getUserId())) {
+                Film f = BookingDatabase.resolveFilm(row);
+                Room r = BookingDatabase.resolveRoom(row);
+                Seat s = BookingDatabase.resolveSeat(row);
+                if (f != null && r != null && s != null) {
+                    List<Item> items = BookingDatabase.resolveItems(row);
+                    user.getBookingHistory().add(
+                        new BookTicket(r, s, f, s.computePrice(), items.isEmpty() ? null : items));
+                }
+            }
         }
         refreshUI();
     }
@@ -73,6 +79,7 @@ public class MainFrame extends JFrame {
     mainPanel.add(new AdminPanel(this), "ADMIN");
     cardLayout.show(mainPanel, "ADMIN");
 }
+       
     // ── Top bar ───────────────────────────────────────────────────────
     private JPanel createTopBar() {
         JPanel topBar = new JPanel(new BorderLayout());
@@ -234,7 +241,17 @@ public class MainFrame extends JFrame {
         mainPanel.add(new SnackOrderPanel(this), "SNACK");
         cardLayout.show(mainPanel, "SNACK");
     }
-
+    
+    public void showSnackForBooking(List<CartItem> tickets) {
+        mainPanel.add(new SnackOrderPanel(this, tickets), "SNACK_BOOK");
+        cardLayout.show(mainPanel, "SNACK_BOOK");
+    }
+    
+    public void showSnackAfterCart() {
+        mainPanel.add(new SnackOrderPanel(this), "SNACK_CART");
+        cardLayout.show(mainPanel, "SNACK_CART");
+    }
+    
     public void showSeatPanel(Film film, boolean bookMode) {
         mainPanel.add(new SeatPanel(film, this, bookMode), "SEAT");
         cardLayout.show(mainPanel, "SEAT");
@@ -265,9 +282,15 @@ public class MainFrame extends JFrame {
 
     /** Cập nhật cart badge trên TopBar mà không reload toàn bộ UI */
     public void refreshCartBadge() {
-        refreshUI();
+        // Only rebuild the top bar, keep current panel visible
+        getContentPane().removeAll();
+        add(createTopBar(), BorderLayout.NORTH);
+        add(mainPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
-
+    
+    
     private void styleButton(JButton btn, Color bg) {
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
@@ -285,31 +308,5 @@ public class MainFrame extends JFrame {
     public boolean isLoggedIn()     { return isLoggedIn; }
     public User    getCurrentUser() { return currentUser; }
     
-    public static void main(String[] args) {
-        // Cross-platform font: uu tien Segoe UI (Windows), fallback Dialog (macOS/Linux)
-        // Dam bao hien thi tieng Viet dung tren ca hai OS
-        String fontName = "Dialog";
-        java.awt.Font[] allFonts = java.awt.GraphicsEnvironment
-            .getLocalGraphicsEnvironment().getAllFonts();
-        for (java.awt.Font ff : allFonts) {
-            if (ff.getName().equalsIgnoreCase("Segoe UI")) { fontName = "Segoe UI"; break; }
-        }
-        final java.awt.Font globalFont = new java.awt.Font(fontName, java.awt.Font.PLAIN, 13);
-        javax.swing.UIManager.put("Button.font",        globalFont);
-        javax.swing.UIManager.put("Label.font",         globalFont);
-        javax.swing.UIManager.put("TextField.font",     globalFont);
-        javax.swing.UIManager.put("TextArea.font",      globalFont);
-        javax.swing.UIManager.put("PasswordField.font", globalFont);
-        javax.swing.UIManager.put("ComboBox.font",      globalFont);
-        javax.swing.UIManager.put("CheckBox.font",      globalFont);
-        javax.swing.UIManager.put("RadioButton.font",   globalFont);
-        javax.swing.UIManager.put("List.font",          globalFont);
-        javax.swing.UIManager.put("Menu.font",          globalFont);
-        javax.swing.UIManager.put("MenuItem.font",      globalFont);
-
-        FilmDatabase.initDatabase();
-        RoomDatabase.init();
-        ItemDatabase.initDatabase();
-        SwingUtilities.invokeLater(MainFrame::new);
-    }
+    
 }

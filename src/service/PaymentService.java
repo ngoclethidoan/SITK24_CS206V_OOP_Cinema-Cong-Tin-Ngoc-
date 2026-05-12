@@ -17,30 +17,60 @@ public class PaymentService implements IPaymentService {
     }
 
     @Override
-    public void processPayment(User user, List<CartItem> tickets, List<SnackCartItem> snacks) {
-        // Flatten snack items
-        List<Item> flatItems = new ArrayList<>();
-        for (SnackCartItem s : snacks) flatItems.addAll(s.getItems());
+    public void processPayment(User user, List<CartItem> tickets, 
+                           List<SnackCartItem> snacks, boolean fromCart) {
+    List<Item> flatItems = new ArrayList<>();
+    for (SnackCartItem s : snacks) flatItems.addAll(s.getItems());
 
-        // Remove all pending rows for this user (they become PAID below)
-        BookingDatabase.removePending(user.getUserId());
-
-        for (CartItem c : tickets) {
-            // Seat was already reserved (booked) when added to cart.
-            // Just confirm the state and save as PAID.
+    for (int i = 0; i < tickets.size(); i++) {
+        CartItem c = tickets.get(i);
+        // Reserve seat
+        synchronized (c.getSeat()) {
             c.getSeat().setState(Seat.State.booked);
+        }
+        List<Item> ticketSnacks = (i == 0 && !flatItems.isEmpty()) ? flatItems : null;
+        BookTicket ticket = new BookTicket(
+            c.getRoom(), c.getSeat(), c.getFilm(),
+            c.getSeat().computePrice(), ticketSnacks
+        );
+        user.getBookingHistory().add(ticket);
+        BookingDatabase.save(user.getUserId(), ticket, ticketSnacks);
+    }
+    if (fromCart) {
+        // ✅ Only remove the paid tickets from cart, not everything
+        user.getCart().removeAll(tickets);
+        user.getSnackCart().removeAll(snacks);
 
-            BookTicket ticket = new BookTicket(
-                c.getRoom(), c.getSeat(), c.getFilm(), c.getSeat().computePrice()
-            );
-            user.getBookingHistory().add(ticket);
-            BookingDatabase.save(
-                user.getUserId(), ticket,
-                flatItems.isEmpty() ? null : flatItems
+        // Remove only paid pending rows from CSV
+        for (CartItem c : tickets) {
+            BookingDatabase.removePendingTicket(
+                user.getUserId(),
+                c.getFilm().getCodeFilm(),
+                c.getSeat().getCodeSeat()
             );
         }
+        // Remove paid snack pending rows
+        if (!snacks.isEmpty()) {
+            BookingDatabase.removePending(user.getUserId()); // snacks don't have individual remove
+        }
+    }
+     
+    
+    
+}
+    @Override
+    public List<String[]> getPaymentMethods() {
+        return List.of(
+            new String[]{"CASH",  "💵", "Cash"},
+            new String[]{"CARD",  "💳", "Credit Card"},
+            new String[]{"DEBIT", "🏦", "Debit Card"},
+            new String[]{"QR",    "📱", "QR Pay"}
+        );
+    }
 
-        user.getCart().clear();
-        user.getSnackCart().clear();
+    @Override
+    public boolean isValidPaymentMethod(String code) {
+        return getPaymentMethods().stream()
+            .anyMatch(m -> m[0].equals(code));
     }
 }

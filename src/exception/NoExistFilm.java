@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// exception/NoExistFilm.java
 package exception;
-
-/**
- *
- * @author Administrator
- */
-public class NoExistFilm {
-    
+public class NoExistFilm extends Exception {
+    public NoExistFilm(String filmCode) {
+        super("Film with code '" + filmCode + "' does not exist.");
+    }
 }

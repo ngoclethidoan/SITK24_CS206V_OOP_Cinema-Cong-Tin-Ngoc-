@@ -107,7 +107,7 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
         lblInfo.setFont(new Font("Dialog", Font.PLAIN, 16));
         lblInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        centerPanel.add(lblInfo);
+//        centerPanel.add(lblInfo);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
         // Summary
@@ -144,7 +144,7 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
                     LanguageManager.t(LanguageManager.MSG_NOT_LOGGED_IN)
                 );
             } else {
-                parent.showSeatPanel(film, true);
+                parent.showSeatPanel(film, false);
             }
         });
 
@@ -160,7 +160,7 @@ centerPanel.add(infoLabel(LanguageManager.t(LanguageManager.FILM_DURATION) + ": 
         return;
         }
         parent.showSeatPanel(film, true);
-        parent.showSnackOrder();
+//        parent.showSnackOrder();
         });
 
         actionPanel.add(btnAddToCart);

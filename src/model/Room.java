@@ -21,6 +21,14 @@ public class Room {
         this.col = col;
         this.seats = new Seat[row][col];
         this.state = State.unoccupied;
+        
+        double base = 80_000;
+    for (int r = 0; r < row; r++) {
+        for (int c = 0; c < col; c++) {
+            String code = (char)('A' + r) + "" + (c + 1);
+            seats[r][c] = new StandardSeat(code, r, c, base);
+        }
+        }
     }
 
     // ── Getters ─────────────────────
