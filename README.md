@@ -1,109 +1,212 @@
-# 🎬 CNT Cinema Booking System
+# 🎬 Cinema Management System
 
-A **Cinema Booking System** built with Java (Swing GUI) for the OOP course project.  
-Demonstrates core OOP principles: Encapsulation, Inheritance, Polymorphism, Abstraction, and Interfaces.
+## 📖 Introduction
+
+The **Cinema Management System** is a Java-based desktop application developed using Object-Oriented Programming (OOP) principles. The project simulates a real cinema booking and management environment with a user-friendly graphical interface.
+
+This system allows users to:
+
+* Browse movies
+* Manage showtimes
+* Book cinema tickets
+* Handle customer bookings
+* Manage movie data and cinema services
+
+The project was developed as a team assignment for the **Object-Oriented Programming (OOP)** course.
 
 ---
 
-## 👥 Authors
-- Cong Nguyen
-- Tin Nguyen  
-- Ngoc Le
+# 🛠 Technologies Used
+
+* **Java**
+* **Java Swing** for GUI
+* **Object-Oriented Programming (OOP)**
+* **CSV/XLSX Data Storage**
+* **NetBeans IDE**
+* **Git & GitHub**
 
 ---
 
-## 🚀 How to Run
+# ✨ Main Features
 
-### Option 1 — Maven (recommended)
+## 🎥 Movie Management
+
+* Add new movies
+* Update movie information
+* Delete movies
+* Display movie list
+* Poster support for movies
+
+## 🕒 Showtime Management
+
+* Manage movie schedules
+* Display available showtimes
+
+## 🎟 Ticket Booking
+
+* Book cinema tickets
+* Store booking information
+* Shopping cart support
+
+## 🖥 Graphical User Interface
+
+* Interactive Java Swing GUI
+* Simple and user-friendly design
+* Navigation between screens
+
+## 💾 Data Management
+
+* CSV/XLSX file handling
+* Data persistence
+* Booking and movie storage
+
+## ⚠ Exception Handling
+
+* Error checking
+* Input validation
+* Bug fixing and debugging support
+
+---
+
+# 📂 Project Structure
+
+```text
+SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-
+│
+├── src/
+│   ├── GUI/           # GUI screens and frames
+│   ├── model/         # Data models
+│   ├── database/      # Database/data handling
+│   ├── service/       # Business logic
+│   ├── interfaces/    # Interfaces
+│   ├── exception/     # Exception handling
+│   └── cinema/        # Main application
+│
+├── Data/              # CSV/XLSX data files
+├── posters/           # Movie posters
+├── assets/            # Application assets
+├── nbproject/         # NetBeans configuration
+└── README.md
+```
+
+---
+
+# 👨‍💻 Team Members & Responsibilities
+
+| Member   | Responsibilities                                                            |
+| -------- | --------------------------------------------------------------------------- |
+| **Tín**  | Built application logic flow, found bugs, contributed minor coding features |
+| **Công** | Developed GUI, model classes, database handling, and core application code  |
+| **Ngọc** | Developed GUI components, interfaces, and service classes                   |
+
+---
+
+# 🚀 How to Run the Project
+
+## 1️⃣ Clone Repository
+
 ```bash
-# 1. Clone the repo
-git clone <your-repo-url>
-cd SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-
-
-# 2. Build
-mvn compile
-
-# 3. Run
-mvn exec:java -Dexec.mainClass="GUI.MainFrame"
-
-# Or build a runnable JAR then run it
-mvn package
-java -jar dist/CNTCinema.jar
-```
-
-### Option 2 — NetBeans
-Open the project folder in NetBeans and press **Run**.
-
-> **Default admin account:** username `admin` / password `123`
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| 🎥 Browse films | View all films with poster, info, summary |
-| 🔍 Search | Search films by title in real time |
-| 💺 Seat selection | Visual 2D seat map with colour-coded types |
-| 🛒 Cart | Add multiple seats to cart before paying |
-| 💳 Payment | Checkout tickets + snacks in one flow |
-| 🍿 Snack order | Order popcorn & drinks independently |
-| 👤 User account | Register, login, view booking history |
-| ⚙️ Settings | Change name, password, language (EN/VI/JP) |
-| 🛠 Admin panel | Add, delete, change state of films (admin only) |
-
----
-
-## 🧩 Package Structure
-
-```
-src/
-├── cinema/        Entry point (Cinema.java)
-├── GUI/           All Swing panels and frames
-│   ├── MainFrame, FilmPanel, SeatPanel, CartPanel
-│   ├── PayPanel, LoginFrame, RegisterFrame
-│   ├── AdminPanel, SettingPanel, UserPanel ...
-├── model/         Data classes
-│   ├── Seat (abstract) → StandardSeat, VIPSeat,
-│   │                      PremiumSeat, ReclineSeat, CoupleSeat
-│   ├── Item → Beverage, Corn
-│   ├── Film, Room, User, BookTicket, CartItem, SnackCartItem
-├── service/       Business logic layer
-│   ├── BookingService, PaymentService, UserService
-│   ├── FilmService, SeatService, ItemService
-├── interfaces/    Contracts for each service
-│   ├── IBookingService, IPaymentService, IUserService
-│   ├── IFilmService, ISeatService, IItemService
-├── database/      CSV / file-based persistence
-│   ├── FilmDatabase, UserDatabase, BookingDatabase
-│   ├── RoomDatabase, ItemDatabase
-└── exception/     Custom exceptions
-    ├── InvalidSeat, NoExistFilm
+git clone https://github.com/ngoclethidoan/SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-.git
 ```
 
 ---
 
-## 🏗 OOP Concepts Applied
+## 2️⃣ Open Project in NetBeans
 
-| Concept | Where |
-|---------|-------|
-| **Encapsulation** | Private fields + getters/setters in all model classes |
-| **Inheritance** | `Seat` → 5 seat types; `Item` → `Beverage`, `Corn` |
-| **Polymorphism** | `computePrice()` overridden per seat type |
-| **Abstract class** | `Seat` is abstract with abstract `computePrice()` |
-| **Interface** | 6 interfaces in `interfaces/` package |
-| **Static** | All `Database` classes use static fields & methods |
-| **File I/O** | `bookings.csv`, `users.dat`, `films.csv` |
-| **2D Array** | `Seat[][]` matrix inside each `Room` |
-| **Concurrency** | `synchronized(seat)` in `SeatService.select()` |
+1. Open **NetBeans IDE**
+2. Select:
+
+```text
+File → Open Project
+```
+
+3. Choose the cloned project folder
+4. Wait for NetBeans to load dependencies
 
 ---
 
-## 📁 Data Files
+## 3️⃣ Run the Application
 
-| File | Contents |
-|------|----------|
-| `Data/films.csv` | Film catalogue (14 fields, `//` separated) |
-| `Data/bookings.csv` | Booking history (`\|` separated) |
-| `users.dat` | User accounts (`\|` separated) |
-| `Data/items.csv` | Snack/drink catalogue |
+Run the project using:
+
+```text
+Run → Run Project
+```
+
+or press:
+
+```text
+F6
+```
+
+Main entry files:
+
+```text
+src/GUI/MainFrame.java
+```
+
+or
+
+```text
+src/cinema/Cinema.java
+```
+
+---
+
+# 📸 Project Resources
+
+The project includes:
+
+* Movie poster images
+* CSV/XLSX datasets
+* Cinema assets and logos
+* Booking and showtime data
+
+---
+
+# 📚 OOP Concepts Applied
+
+This project applies multiple OOP concepts:
+
+* **Encapsulation**
+* **Inheritance**
+* **Polymorphism**
+* **Abstraction**
+* **Interfaces**
+* **Exception Handling**
+* **Modular Design**
+
+---
+
+# 🎯 Learning Objectives
+
+This project helps practice:
+
+* Java desktop application development
+* GUI programming with Swing
+* Team collaboration using GitHub
+* Project organization
+* Data handling and management
+* Applying OOP principles in real applications
+
+---
+
+# 🔗 GitHub Repository
+
+Repository Link:
+
+[https://github.com/ngoclethidoan/SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-](https://github.com/ngoclethidoan/SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-)
+
+---
+
+# 📌 Notes
+
+* Developed for educational purposes.
+* Some features may still be under improvement.
+* Best opened using NetBeans IDE.
+
+---
+
+# ❤️ Thank You
+
+Thank you for checking out our Cinema Management System project!
