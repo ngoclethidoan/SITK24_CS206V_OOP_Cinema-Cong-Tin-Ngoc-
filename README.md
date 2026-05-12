@@ -95,9 +95,9 @@ SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-
 
 | Member   | Responsibilities                                                            |
 | -------- | --------------------------------------------------------------------------- |
-| **Tín**  | Built application logic flow, found bugs, contributed minor coding features |
-| **Công** | Developed GUI, model classes, database handling, and core application code  |
-| **Ngọc** | Developed GUI components, interfaces, and service classes                   |
+| **Nguyễn Đào Trọng Tín**  | Built application logic flow, found bugs, contributed minor coding features |
+| **Nguyễn Tống Thành Công** | Developed GUI, model classes, database handling, and core application code  |
+| **Lê Thị Đoan Ngọc** | Developed GUI components, interfaces, and service classes                   |
 
 ---
 
