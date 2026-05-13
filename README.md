@@ -34,7 +34,7 @@ java -jar dist/CNTCinema.jar
 ```
 
 ### Option 2 — NetBeans
-Open the project folder in NetBeans and press **Run** (Shift+F6 on `MainFrame.java`).
+Open the project folder in NetBeans and press **Run** (Shift+F6 on `CinemaRun.java`).
 
 ### Option 3 — Run Tests
 ```bash
