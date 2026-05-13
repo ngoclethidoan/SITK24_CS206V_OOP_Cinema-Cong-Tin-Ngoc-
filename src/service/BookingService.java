@@ -1,6 +1,7 @@
 package service;
 import interfaces.IBookingService;
 import database.BookingDatabase;
+import exception.SeatAlreadyBookedException;
 import model.*;
 import java.util.List;
 
@@ -42,7 +43,11 @@ public class BookingService implements IBookingService{
             return null;
         }
 
-        seatService.select(seat);
+        try {
+            seatService.select(seat);
+        } catch (SeatAlreadyBookedException ex) {
+            System.getLogger(BookingService.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
 
         // FIX: truyền đúng 4 tham số — thêm seat.computePrice()
         BookTicket ticket = new BookTicket(room, seat, film, seat.computePrice());
@@ -133,7 +138,11 @@ public class BookingService implements IBookingService{
 
             if (!c.getSeat().isAvailable()) continue;
 
-            seatService.select(c.getSeat());
+            try {
+                seatService.select(c.getSeat());
+            } catch (SeatAlreadyBookedException ex) {
+                System.getLogger(BookingService.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
 
             // FIX: truyền đúng 4 tham số
             BookTicket ticket = new BookTicket(
