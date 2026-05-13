@@ -19,7 +19,7 @@ Demonstrates core OOP principles: Encapsulation, Inheritance, Polymorphism, Abst
 ### Option 1 — Maven (recommended)
 ```bash
 # 1. Clone the repo
-git clone <your-repo-url>
+git clone <https://github.com/ngoclethidoan/SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-.git>
 cd SITK24_CS206V_OOP_Cinema-Cong-Tin-Ngoc-
 
 # 2. Build
