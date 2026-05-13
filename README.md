@@ -9,7 +9,7 @@ Demonstrates core OOP principles: Encapsulation, Inheritance, Polymorphism, Abst
 | Name | Student ID | Role |
 |------|-----------|------|
 | Cong Nguyen | 2402052 | GUI, model, Database|
-| Tin Nguyen  | 2402061 | build, fix bugs, coding|
+| Tin Nguyen  | 2402061 | build logic, fix bugs, coding|
 | Ngoc Le     | 2402026 | GUI , interface, service|
 
 ---
